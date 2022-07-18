@@ -17,8 +17,8 @@ class MusicPlayerAdapter extends TypeAdapter<MusicPlayer> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return MusicPlayer(
-      name: fields[1] as String,
-      id: fields[0] as int?,
+      name: fields[0] as String,
+      songIds: (fields[1] as List).cast<int>(),
     );
   }
 
@@ -27,9 +27,9 @@ class MusicPlayerAdapter extends TypeAdapter<MusicPlayer> {
     writer
       ..writeByte(2)
       ..writeByte(0)
-      ..write(obj.id)
+      ..write(obj.name)
       ..writeByte(1)
-      ..write(obj.name);
+      ..write(obj.songIds);
   }
 
   @override

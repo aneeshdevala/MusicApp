@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:musicapp/favorite.dart';
-import 'package:musicapp/model/musicplayer.dart';
 import 'package:musicapp/playlist.dart';
 import 'package:musicapp/search.dart';
 
 import 'homescreen.dart';
 
 class BottomScreens extends StatefulWidget {
-  BottomScreens({Key? key}) : super(key: key);
+  const BottomScreens({Key? key}) : super(key: key);
 
   @override
   State<BottomScreens> createState() => _BottomScreensState();
@@ -17,9 +16,9 @@ class _BottomScreensState extends State<BottomScreens> {
   int currentIndex = 0;
   final screens = [
     const HomeScreen(),
-    SearchBar(),
-    FavoriteScreen(),
-    PlayListSc(),
+    const SearchBar(),
+    const FavoriteScreen(),
+    const PlayListSc(),
   ];
   @override
   Widget build(BuildContext context) {

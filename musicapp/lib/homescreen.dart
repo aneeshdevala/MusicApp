@@ -1,8 +1,12 @@
 import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:musicapp/Database/favoritebtn.dart';
 import 'package:musicapp/Database/favoritedb.dart';
+import 'package:musicapp/Database/playlsitsongdb.dart';
+import 'package:musicapp/SettingsScreen/privacpolicy.dart';
+import 'package:musicapp/getsongstorage.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'SettingsScreen/feedback.dart';
@@ -38,18 +42,18 @@ class HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     requestPermission();
   }
 
-  void requestPermission() {
-    Permission.storage.request();
+  void requestPermission() async {
+    await Permission.storage.request();
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    FavoriteDB.favoriteSongs.notifyListeners();
+    setState(() {});
     // return ValueListenableBuilder(
     //     valueListenable: FavoriteDB.favoriteSongs,
     //     builder: (BuildContext ctx, List<SongModel> favorData, Widget? child) {
@@ -96,16 +100,6 @@ class HomeScreenState extends State<HomeScreen> {
                       },
                     ),
                     ListTile(
-                      leading: const Icon(Icons.note_alt_outlined),
-                      title: const Text('Terms&Condition'),
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const Terms()));
-                      },
-                    ),
-                    ListTile(
                       leading: const Icon(Icons.share_outlined),
                       title: const Text('Share this App'),
                       onTap: () {
@@ -116,7 +110,10 @@ class HomeScreenState extends State<HomeScreen> {
                       leading: const Icon(Icons.lock),
                       title: const Text('Privacy Policy'),
                       onTap: () {
-                        Navigator.pop(context);
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const PrivacyPol()));
                       },
                     ),
                     ListTile(
@@ -127,16 +124,52 @@ class HomeScreenState extends State<HomeScreen> {
                       },
                     ),
                     ListTile(
+                      leading: const Icon(Icons.restore),
+                      title: const Text('Reset App'),
+                      onTap: () {
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: const Text('Reset App'),
+                                content: const Text(
+                                    'Are you sure you want to reset the app?'),
+                                actions: [
+                                  TextButton(
+                                    child: const Text('Cancel'),
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                  TextButton(
+                                    child: const Text('Reset'),
+                                    onPressed: () {
+                                      appReset(context);
+                                    },
+                                  ),
+                                ],
+                              );
+                            });
+                        // appReset(context);
+                      },
+                    ),
+                    ListTile(
                       leading: const Icon(Icons.info_outlined),
                       title: const Text('About'),
                       onTap: () {
-                        Navigator.pop(context);
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const Terms()));
                       },
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: const [
-                        Text('Version 0.0.1'),
+                        Text(
+                          'version [1.0.0]',
+                          style: TextStyle(fontSize: 10),
+                        ),
                       ],
                     )
                   ],
@@ -183,6 +216,7 @@ class HomeScreenState extends State<HomeScreen> {
             if (!FavoriteDB.isInitialized) {
               FavoriteDB.initialise(item.data!);
             }
+            GetSongs.songscopy = item.data!;
 
             return GridView.builder(
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -194,16 +228,32 @@ class HomeScreenState extends State<HomeScreen> {
               itemBuilder: (BuildContext context, int index) {
                 return GestureDetector(
                   onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => NowPlay(
-                            song: [],
-                            songModel: item.data!,
-                            index: index,
-                            audioPlayer: _audioPlayer,
-                          ), //songmodel Passing
-                        ));
+                    GetSongs.player.setAudioSource(
+                      GetSongs.createSongList(item.data!),
+                      initialIndex: index,
+                    );
+                    if (GetSongs.currentIndex != index && mounted) {
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => NowPlay(playerSong: item.data!),
+                      ));
+                      GetSongs.player.play();
+                    } else {
+                      GetSongs.currentIndex = index;
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => NowPlay(playerSong: item.data!),
+                      ));
+                    }
+                    setState(() {});
+                    // Navigator.push(
+                    //     context,
+                    //     MaterialPageRoute(
+                    //       builder: (context) => NowPlay(
+                    //         song: const [],
+                    //         songModel: item.data!,
+                    //         index: index,
+                    //         audioPlayer: _audioPlayer,
+                    //       ), //songmodel Passing
+                    //     ));
                   },
                   child: Card(
                     shape: const RoundedRectangleBorder(
@@ -222,11 +272,13 @@ class HomeScreenState extends State<HomeScreen> {
                           child: QueryArtworkWidget(
                             id: item.data![index].id,
                             type: ArtworkType.AUDIO,
-                            nullArtworkWidget:
-                                const Icon(Icons.music_note_outlined),
+                            nullArtworkWidget: const Icon(
+                              Icons.music_note_outlined,
+                              size: 50,
+                            ),
                             artworkFit: BoxFit.fill,
-                            artworkBorder: const BorderRadius.all(
-                                const Radius.circular(30)),
+                            artworkBorder:
+                                const BorderRadius.all(Radius.circular(30)),
                           ),
                         ),
                         // const SizedBox(

@@ -24,7 +24,7 @@ class _FavoriteButState extends State<FavoriteBut> {
 
                 const snackBar = SnackBar(
                     content: Text(
-                  'Removed From Heart',
+                  'Removed From Favorite',
                   style: TextStyle(color: Color.fromARGB(255, 247, 247, 247)),
                 ));
                 ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -48,8 +48,10 @@ class _FavoriteButState extends State<FavoriteBut> {
                     Icons.favorite,
                     color: Colors.red,
                   )
-                : const Icon(Icons.favorite_border,
-                    color: Color.fromARGB(255, 255, 255, 255)),
+                : const Icon(
+                    Icons.favorite_border,
+                    color: Color.fromARGB(255, 0, 0, 0),
+                  ),
           );
         });
   }

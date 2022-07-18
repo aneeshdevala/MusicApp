@@ -2,20 +2,22 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:lottie/lottie.dart';
 import 'package:musicapp/Database/favoritedb.dart';
 import 'package:musicapp/childscreen/nowplaying.dart';
+import 'package:musicapp/getsongstorage.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 
 class FavoriteScreen extends StatefulWidget {
-  FavoriteScreen({Key? key}) : super(key: key);
+  const FavoriteScreen({Key? key}) : super(key: key);
 
   @override
   State<FavoriteScreen> createState() => _FavoriteScreenState();
 }
 
 class _FavoriteScreenState extends State<FavoriteScreen> {
-  final OnAudioQuery audioQuery = OnAudioQuery();
-  final AudioPlayer audioPlayer = AudioPlayer();
+  // final OnAudioQuery audioQuery = OnAudioQuery();
+  // final AudioPlayer audioPlayer = AudioPlayer();
 
   static ConcatenatingAudioSource createSongList(List<SongModel> song) {
     List<AudioSource> source = [];
@@ -25,23 +27,22 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
     return ConcatenatingAudioSource(children: source);
   }
 
-  playSong(String? uri) {
-    try {
-      //song might be currepted so using exception
-      audioPlayer.setAudioSource(
-        AudioSource.uri(
-          Uri.parse(uri!),
-        ),
-      );
-      audioPlayer.play();
-    } on Exception {
-      log("Error parsing song");
-    }
-  }
+  // playSong(String? uri) {
+  //   try {
+  //     //song might be currepted so using exception
+  //     audioPlayer.setAudioSource(
+  //       AudioSource.uri(
+  //         Uri.parse(uri!),
+  //       ),
+  //     );
+  //     audioPlayer.play();
+  //   } on Exception {
+  //     log("Error parsing song");
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
-    FavoriteDB.favoriteSongs.notifyListeners();
     return ValueListenableBuilder(
         valueListenable: FavoriteDB.favoriteSongs,
         builder: (BuildContext ctx, List<SongModel> favorData, Widget? child) {
@@ -57,84 +58,112 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                 1
               ], begin: Alignment.topCenter, end: Alignment.bottomCenter),
             ),
-            child: Scaffold(
-              backgroundColor: Colors.transparent,
-              appBar: AppBar(
-                elevation: 0,
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Scaffold(
                 backgroundColor: Colors.transparent,
-                title: Text(
-                  'Favorites',
-                  style: TextStyle(color: Colors.black),
+                appBar: AppBar(
+                  elevation: 0,
+                  backgroundColor: Colors.transparent,
+                  title: const Text(
+                    'Favorites',
+                    style: TextStyle(color: Colors.black, fontSize: 20),
+                  ),
+                  //centerTitle: true,
                 ),
-                centerTitle: true,
-              ),
-              body: Padding(
-                padding: const EdgeInsets.only(top: 20),
-                child: FavoriteDB.favoriteSongs.value.isEmpty
-                    ? const Center(
-                        child: Text(
-                          'No Song Found',
-                          style: TextStyle(color: Colors.white, fontSize: 15),
-                        ),
-                      )
-                    : ValueListenableBuilder(
-                        valueListenable: FavoriteDB.favoriteSongs,
-                        builder: (BuildContext ctx, List<SongModel> favorData,
-                            Widget? child) {
-                          return ListView.separated(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              scrollDirection: Axis.vertical,
-                              itemBuilder: (ctx, index) {
-                                return ListTile(
-                                  onTap: () {
-                                    FavoriteDB.favoriteSongs.notifyListeners();
-                                    List<SongModel> newlist = [...favorData];
-                                    setState(() {});
-                                    audioPlayer.setAudioSource(
-                                        createSongList(newlist),
-                                        initialIndex: index);
-                                    audioPlayer.play();
-                                    Navigator.of(context)
-                                        .push(MaterialPageRoute(
-                                            builder: (ctx) => NowPlay(
-                                                  songModel: favorData,
-                                                  song: newlist,
-                                                  index: index,
-                                                  audioPlayer: audioPlayer,
-                                                )));
-                                  },
-                                  leading: QueryArtworkWidget(
-                                    id: favorData[index].id,
-                                    type: ArtworkType.AUDIO,
-                                    nullArtworkWidget:
-                                        const Icon(Icons.music_note_outlined),
-                                  ),
-                                  title: Text(
-                                    favorData[index].title,
-                                    style: const TextStyle(
-                                        color: Colors.white, fontSize: 15),
-                                  ),
-                                  subtitle: Text(
-                                    favorData[index].artist!,
-                                    style: const TextStyle(color: Colors.white),
-                                  ),
-                                  trailing: IconButton(
-                                      onPressed: () {
-                                        FavoriteDB.favoriteSongs
-                                            .notifyListeners();
-                                        FavoriteDB.delete(favorData[index].id);
+                body: Padding(
+                  padding: const EdgeInsets.only(top: 20),
+                  child: FavoriteDB.favoriteSongs.value.isEmpty
+                      ? Center(
+                          child: Column(
+                          children: [
+                            Lottie.asset(
+                              'assets/fav.json',
+                              height: 200,
+                              width: 200,
+                            ),
+                            const Text(
+                              'No favorites yet',
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ))
+                      : ListView(children: [
+                          ValueListenableBuilder(
+                            valueListenable: FavoriteDB.favoriteSongs,
+                            builder: (BuildContext ctx,
+                                List<SongModel> favorData, Widget? child) {
+                              return ListView.separated(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  scrollDirection: Axis.vertical,
+                                  itemBuilder: (ctx, index) {
+                                    return ListTile(
+                                      onTap: () {
+                                        // FavoriteDB.favoriteSongs
+                                        //     .notifyListeners();
+                                        List<SongModel> newlist = [
+                                          ...favorData
+                                        ];
                                         setState(() {});
+                                        GetSongs.player.setAudioSource(
+                                            createSongList(newlist),
+                                            initialIndex: index);
+                                        GetSongs.player.play();
+                                        Navigator.of(context)
+                                            .push(MaterialPageRoute(
+                                                builder: (ctx) => NowPlay(
+                                                      playerSong: newlist,
+
+                                                      // songModel: favorData,
+                                                      // song: newlist,
+                                                      // index: index,
+                                                      // audioPlayer: audioPlayer,
+                                                    )));
                                       },
-                                      icon: Icon(Icons.heart_broken_sharp)),
-                                );
-                              },
-                              separatorBuilder: (ctx, index) {
-                                return const Divider();
-                              },
-                              itemCount: favorData.length);
-                        },
-                      ),
+                                      leading: QueryArtworkWidget(
+                                        id: favorData[index].id,
+                                        type: ArtworkType.AUDIO,
+                                        nullArtworkWidget: const Icon(
+                                          Icons.music_note_outlined,
+                                          size: 35,
+                                        ),
+                                      ),
+                                      title: Text(
+                                        favorData[index].title,
+                                        style: const TextStyle(
+                                            color: Color.fromARGB(255, 0, 0, 0),
+                                            fontSize: 15),
+                                      ),
+                                      subtitle: Text(
+                                        favorData[index].artist!,
+                                        style: const TextStyle(
+                                            color:
+                                                Color.fromARGB(255, 0, 0, 0)),
+                                      ),
+                                      trailing: IconButton(
+                                          onPressed: () {
+                                            // FavoriteDB.favoriteSongs
+                                            //     .notifyListeners();
+                                            FavoriteDB.delete(
+                                                favorData[index].id);
+                                            setState(() {});
+                                          },
+                                          icon: const Icon(
+                                            Icons.heart_broken_sharp,
+                                            size: 30,
+                                          )),
+                                    );
+                                  },
+                                  separatorBuilder: (ctx, index) {
+                                    return const Divider();
+                                  },
+                                  itemCount: favorData.length);
+                            },
+                          ),
+                        ]),
+                ),
               ),
             ),
           );

@@ -7,6 +7,7 @@ class FavoriteDB {
   static bool isInitialized = false;
   static final musicDb = Hive.box<int>('favoriteDB');
   static ValueNotifier<List<SongModel>> favoriteSongs = ValueNotifier([]);
+
   static initialise(List<SongModel> songs) {
     for (SongModel song in songs) {
       if (isfavor(song)) {
@@ -16,6 +17,14 @@ class FavoriteDB {
     isInitialized = true;
   }
 
+  static bool isfavor(SongModel song) {
+    if (musicDb.values.contains(song.id)) {
+      return true;
+    }
+
+    return false;
+  }
+
   static add(SongModel song) async {
     musicDb.add(song.id);
     favoriteSongs.value.add(song);
@@ -23,7 +32,6 @@ class FavoriteDB {
   }
 
   static delete(int id) async {
-    //  await Hive.openBox('favoriteDB');
     int deletekey = 0;
     if (!musicDb.values.contains(id)) {
       return;
@@ -36,13 +44,5 @@ class FavoriteDB {
     });
     musicDb.delete(deletekey);
     favoriteSongs.value.removeWhere((song) => song.id == id);
-  }
-
-  static bool isfavor(SongModel song) {
-    if (musicDb.values.contains(song.id)) {
-      return true;
-    }
-
-    return false;
   }
 }
