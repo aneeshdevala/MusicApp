@@ -20,7 +20,7 @@ class _FavoriteButState extends State<FavoriteBut> {
             onPressed: () {
               if (FavoriteDB.isfavor(widget.song)) {
                 FavoriteDB.delete(widget.song.id);
-                FavoriteDB.favoriteSongs.notifyListeners();
+                //FavoriteDB.favoriteSongs.notifyListeners();
 
                 const snackBar = SnackBar(
                     content: Text(
@@ -30,7 +30,7 @@ class _FavoriteButState extends State<FavoriteBut> {
                 ScaffoldMessenger.of(context).showSnackBar(snackBar);
               } else {
                 FavoriteDB.add(widget.song);
-                FavoriteDB.favoriteSongs.notifyListeners();
+                //   FavoriteDB.favoriteSongs.notifyListeners();
                 const snackbar = SnackBar(
                   backgroundColor: Colors.black,
                   content: Text(

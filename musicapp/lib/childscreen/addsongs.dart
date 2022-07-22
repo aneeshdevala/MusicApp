@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:musicapp/Database/playlsitsongdb.dart';
+
 import 'package:musicapp/model/musicplayer.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 
@@ -41,7 +41,7 @@ class _SongListPageState extends State<SongListPage> {
                           child: Text(
                             'Add Songs ',
                             style: TextStyle(
-                                fontSize: 25,
+                                fontSize: 20,
                                 fontWeight: FontWeight.bold,
                                 color: Color.fromARGB(255, 0, 0, 0)),
                           ),
@@ -91,8 +91,8 @@ class _SongListPageState extends State<SongListPage> {
                               itemBuilder: (ctx, index) {
                                 return ListTile(
                                   onTap: () {},
-                                  iconColor: Color.fromARGB(255, 0, 0, 0),
-                                  textColor: Color.fromARGB(255, 0, 0, 0),
+                                  iconColor: const Color.fromARGB(255, 0, 0, 0),
+                                  textColor: const Color.fromARGB(255, 0, 0, 0),
                                   leading: QueryArtworkWidget(
                                     id: item.data![index].id,
                                     type: ArtworkType.AUDIO,

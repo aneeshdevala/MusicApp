@@ -1,7 +1,5 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
-import 'package:just_audio/just_audio.dart';
+
 import 'package:musicapp/Database/favoritebtn.dart';
 import 'package:musicapp/Database/favoritedb.dart';
 import 'package:musicapp/Database/playlsitsongdb.dart';
@@ -53,19 +51,19 @@ class HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    setState(() {});
-    // return ValueListenableBuilder(
-    //     valueListenable: FavoriteDB.favoriteSongs,
-    //     builder: (BuildContext ctx, List<SongModel> favorData, Widget? child) {
+    FocusManager.instance.primaryFocus?.unfocus();
+
     return Container(
       height: double.infinity,
       width: double.infinity,
       decoration: const BoxDecoration(
-        gradient: LinearGradient(
-            colors: [Color(0xFFDD4C4C), Color.fromARGB(255, 255, 255, 255)],
-            stops: [0.5, 1],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter),
+        gradient: LinearGradient(colors: [
+          Color.fromARGB(255, 209, 3, 175),
+          Color.fromARGB(255, 39, 32, 32)
+        ], stops: [
+          0.5,
+          1
+        ], begin: Alignment.topCenter, end: Alignment.bottomCenter),
       ),
       child: Scaffold(
         backgroundColor: Colors.transparent,
@@ -82,7 +80,7 @@ class HomeScreenState extends State<HomeScreen> {
                 decoration: const BoxDecoration(
                     gradient: LinearGradient(
                   colors: [
-                    Color(0xFFDD4C4C),
+                    Color.fromARGB(255, 4, 255, 129),
                     Color.fromARGB(255, 255, 255, 255),
                   ],
                 )),
@@ -216,13 +214,15 @@ class HomeScreenState extends State<HomeScreen> {
             if (!FavoriteDB.isInitialized) {
               FavoriteDB.initialise(item.data!);
             }
+
             GetSongs.songscopy = item.data!;
+            //GetSongs.playingSongs = item.data!;
 
             return GridView.builder(
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 crossAxisSpacing: 4,
-                mainAxisSpacing: 2,
+                mainAxisSpacing: 5,
               ),
               itemCount: item.data!.length,
               itemBuilder: (context, index) {
@@ -232,19 +232,6 @@ class HomeScreenState extends State<HomeScreen> {
                         GetSongs.createSongList(item.data!),
                         initialIndex: index);
                     GetSongs.player.play();
-                    // if (GetSongs.currentIndes != index && mounted) {
-                    //   Navigator.of(context).push(MaterialPageRoute(
-                    //     builder: (context) =>
-                    //         NowPlay(playerSong: [item.data![index]]),
-                    //   ));
-                    //   GetSongs.player.play();
-                    // } else {
-                    //   GetSongs.currentIndes = index;
-                    //   Navigator.of(context).push(MaterialPageRoute(
-                    //     builder: (context) =>
-                    //         NowPlay(playerSong: [item.data![index]]),
-                    //   ));
-                    // }
                     setState(() {});
                     Navigator.push(
                         context,
@@ -253,75 +240,79 @@ class HomeScreenState extends State<HomeScreen> {
                             playerSong: item.data!,
                           ), //songmodel Passing
                         ));
+                    //   FavoriteDB.favoriteSongs.notifyListeners();
                   },
-                  child: Card(
-                    shape: const RoundedRectangleBorder(
-                      side: BorderSide(width: 0),
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(25),
-                          topRight: Radius.circular(25)),
-                    ),
-                    color: Colors.transparent,
-                    elevation: 1,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Expanded(
-                          //  flex: 6,
-                          child: QueryArtworkWidget(
-                            id: item.data![index].id,
-                            type: ArtworkType.AUDIO,
-                            nullArtworkWidget: const Icon(
-                              Icons.music_note_outlined,
-                              size: 50,
+                  child: Padding(
+                    padding: const EdgeInsets.all(5),
+                    child: Card(
+                      shape: const RoundedRectangleBorder(
+                        side: BorderSide(width: 0),
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(25),
+                            topRight: Radius.circular(25)),
+                      ),
+                      color: Colors.transparent,
+                      elevation: 0,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Expanded(
+                            //  flex: 6,
+                            child: QueryArtworkWidget(
+                              id: item.data![index].id,
+                              type: ArtworkType.AUDIO,
+                              nullArtworkWidget: const Icon(
+                                Icons.music_note_outlined,
+                                size: 50,
+                              ),
+                              artworkFit: BoxFit.fill,
+                              artworkBorder:
+                                  const BorderRadius.all(Radius.circular(30)),
                             ),
-                            artworkFit: BoxFit.fill,
-                            artworkBorder:
-                                const BorderRadius.all(Radius.circular(30)),
                           ),
-                        ),
-                        // const SizedBox(
-                        //   height: 10,
-                        // ),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                            left: 8,
-                            right: 8,
-                          ),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                flex: 4,
-                                child: SingleChildScrollView(
-                                  scrollDirection: Axis.horizontal,
-                                  // ignore: sized_box_for_whitespace
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        item.data![index].displayNameWOExt,
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.bold),
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                      Text(
-                                        "${item.data![index].artist}",
-                                        style: const TextStyle(fontSize: 10),
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ],
+                          // const SizedBox(
+                          //   height: 10,
+                          // ),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              left: 8,
+                              right: 8,
+                            ),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  flex: 4,
+                                  child: SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    // ignore: sized_box_for_whitespace
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          item.data![index].displayNameWOExt,
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        Text(
+                                          "${item.data![index].album}",
+                                          style: const TextStyle(fontSize: 10),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
-                              ),
-                              Expanded(
-                                  flex: 1,
-                                  child:
-                                      FavoriteBut(song: HomeScreen.song[index]))
-                            ],
+                                Expanded(
+                                    flex: 1,
+                                    child: FavoriteBut(
+                                        song: HomeScreen.song[index]))
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 );
@@ -331,13 +322,5 @@ class HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
-    // });
   }
 }
-
-  // Widget openDrawer() {
-  //   return (Drawer(
-  //     child: Text('hi'),
-  //   ));
-  // }
-

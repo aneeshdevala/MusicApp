@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:musicapp/childscreen/miniscreen.dart';
 import 'package:musicapp/favorite.dart';
+import 'package:musicapp/newbox.dart';
 import 'package:musicapp/playlist.dart';
 import 'package:musicapp/search.dart';
 import 'package:on_audio_query/on_audio_query.dart';
@@ -41,19 +42,31 @@ class _BottomScreensState extends State<BottomScreens> {
                 const SizedBox(),
               BottomNavigationBar(
                 elevation: 0,
-                backgroundColor: Colors.transparent,
+                //backgroundColor: Colors.black,
                 selectedItemColor: Colors.black,
                 selectedFontSize: 15,
-                unselectedItemColor: Colors.black38,
+                unselectedItemColor: Color.fromRGBO(0, 0, 0, 0.38),
+                selectedIconTheme:
+                    const IconThemeData(color: Color.fromARGB(255, 235, 0, 0)),
                 showUnselectedLabels: false,
                 type: BottomNavigationBarType.fixed,
                 currentIndex: currentIndex,
-                onTap: (index) => setState(() => currentIndex = index),
+                onTap: (index) {
+                  setState(() {
+                    currentIndex = index;
+                    FavoriteDB.favoriteSongs.notifyListeners();
+                  });
+                },
                 items: const [
                   BottomNavigationBarItem(
                       icon: Icon(Icons.music_note), label: 'All songs'),
                   BottomNavigationBarItem(
-                      icon: Icon(Icons.search), label: 'Search'),
+                      icon: Padding(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                        child: Icon(Icons.search),
+                      ),
+                      label: 'Search'),
                   BottomNavigationBarItem(
                       icon: Icon(Icons.favorite_border), label: 'Favorites'),
                   BottomNavigationBarItem(

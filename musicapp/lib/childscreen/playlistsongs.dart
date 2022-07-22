@@ -18,6 +18,7 @@ class PlaylistData extends StatefulWidget {
       : super(key: key);
   final MusicPlayer playlist;
   final int folderindex;
+  static List<SongModel> playlistSongid = [];
   @override
   State<PlaylistData> createState() => _PlaylistDataState();
 }
@@ -85,6 +86,7 @@ class _PlaylistDataState extends State<PlaylistData> {
                       Widget? child) {
                     playlistsong = listPlaylist(
                         value.values.toList()[widget.folderindex].songIds);
+                    PlaylistData.playlistSongid = playlistsong;
 
                     return ListView.separated(
                         shrinkWrap: true,
@@ -95,17 +97,14 @@ class _PlaylistDataState extends State<PlaylistData> {
                               onTap: () {
                                 List<SongModel> newlist = [...playlistsong];
 
-                                //GetSongs.player.stop();
+                                GetSongs.player.stop();
                                 GetSongs.player.setAudioSource(
                                     GetSongs.createSongList(newlist),
                                     initialIndex: index);
-                                //  GetSongs.player.play();
+                                GetSongs.player.play();
                                 Navigator.of(context).push(MaterialPageRoute(
                                     builder: (ctx) => NowPlay(
                                           playerSong: playlistsong,
-                                          // songModel: playlistsong,
-                                          // index: index,
-                                          // audioPlayer: GetSongs.player,
                                         )));
                               },
                               leading: QueryArtworkWidget(
@@ -129,26 +128,6 @@ class _PlaylistDataState extends State<PlaylistData> {
                               ),
                               trailing: IconButton(
                                   onPressed: () {
-                                    // DropdownButton(
-                                    //     items: [
-                                    //       DropdownMenuItem(
-                                    //           value: 'Add to Favorite',
-                                    //           child: Text('Add to Favorite')),
-                                    //       DropdownMenuItem(
-                                    //           value: 'Delete',
-                                    //           child: Text('Delete')),
-                                    //     ],
-                                    //     onChanged: (value) {
-                                    //       if (value == 'Add to Favorite') {
-                                    //         FavoriteBut(
-                                    //             song: playlistsong[index]);
-                                    //       } else if (value == 'Delete') {
-                                    //         // playlistDelete(
-                                    //         //   SongModel(_info)
-                                    //         //     song: playlistsong[index]);
-                                    //       }
-                                    //     });
-
                                     showModalBottomSheet(
                                         backgroundColor: Colors.transparent,
                                         context: context,

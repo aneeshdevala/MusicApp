@@ -2,6 +2,7 @@ import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:lottie/lottie.dart';
 import 'package:musicapp/Database/favoritedb.dart';
 
 import 'package:musicapp/getsongstorage.dart';
@@ -17,9 +18,6 @@ class NowPlay extends StatefulWidget {
   }) : super(key: key);
 
   final List<SongModel> playerSong;
-  // final AudioPlayer audioPlayer;
-  //int index;
-
   @override
   State<NowPlay> createState() => _NowPlayState();
 }
@@ -38,21 +36,8 @@ class _NowPlayState extends State<NowPlay> {
         GetSongs.currentIndes = index;
       }
     });
-    // playSong();
     super.initState();
   }
-
-  // void playSong() {
-  //   GetSongs.player.play();
-  //   try {
-  //     GetSongs.player.setAudioSource(AudioSource.uri(
-  //         Uri.parse(widget.playerSong[GetSongs.player.currentIndex!].uri!)));
-  //     GetSongs.player.play();
-  //     _isPlaying = true;
-  //   } on Exception {
-  //     Text('OOOOOpppppssss');
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -60,11 +45,13 @@ class _NowPlayState extends State<NowPlay> {
       height: double.infinity,
       width: double.infinity,
       decoration: const BoxDecoration(
-        gradient: LinearGradient(
-            colors: [Color(0xFFDD4C4C), Color.fromARGB(255, 233, 211, 211)],
-            stops: [0.5, 1],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter),
+        gradient: LinearGradient(colors: [
+          Color.fromARGB(255, 214, 201, 18),
+          Color.fromARGB(255, 233, 211, 211)
+        ], stops: [
+          0.5,
+          1
+        ], begin: Alignment.topCenter, end: Alignment.bottomCenter),
       ),
       child: Scaffold(
         backgroundColor: Colors.transparent,
@@ -79,6 +66,7 @@ class _NowPlayState extends State<NowPlay> {
                 children: [
                   IconButton(
                       onPressed: () {
+                        setState(() {});
                         Navigator.pop(context);
                         FavoriteDB.favoriteSongs.notifyListeners();
                       },
@@ -96,10 +84,13 @@ class _NowPlayState extends State<NowPlay> {
                           child: QueryArtworkWidget(
                             keepOldArtwork: true,
                             id: widget.playerSong[currentIndex].id,
+                            quality: 100,
                             type: ArtworkType.AUDIO,
+                            artworkFit: BoxFit.fill,
                             artworkBorder: BorderRadius.circular(50),
-                            nullArtworkWidget: Image.asset(
-                              'assets/undraw_Compose_music_re_wpiw-removebg-preview.png',
+                            nullArtworkWidget: Lottie.asset(
+                              // 'assets/undraw_Compose_music_re_wpiw-removebg-preview.png',
+                              'assets/mini.json',
                             )
 
                             //  const Icon(
@@ -218,26 +209,14 @@ class _NowPlayState extends State<NowPlay> {
                               ),
                             ),
                             IconButton(
-                                onPressed: (() {
-                                  setState(() {
-                                    if (GetSongs.player.hasPrevious) {
-                                      GetSongs.player.seekToPrevious();
-                                      GetSongs.player.play();
-                                    } else {
-                                      GetSongs.player.play();
-                                    }
-                                    // if (currentIndex > 0) {
-                                    //   setState(() {
-                                    //     currentIndex--;
-                                    //   });
-                                    // } else {
-                                    //   currentIndex =
-                                    //       widget.playerSong.length - 1;
-                                    // }
-                                    // //playSong();
-                                    // GetSongs.player.play;
-                                  });
-                                }),
+                                onPressed: () async {
+                                  if (GetSongs.player.hasPrevious) {
+                                    await GetSongs.player.seekToPrevious();
+                                    await GetSongs.player.play();
+                                  } else {
+                                    await GetSongs.player.play();
+                                  }
+                                },
                                 icon: const Icon(
                                   Icons.skip_previous,
                                   size: 50,
@@ -258,17 +237,13 @@ class _NowPlayState extends State<NowPlay> {
                                   size: 50,
                                 )),
                             IconButton(
-                                onPressed: (() {
-                                  setState(
-                                    () async {
-                                      if (GetSongs.player.hasNext) {
-                                        await GetSongs.player.seekToNext();
-                                        await GetSongs.player.play();
-                                      } else {
-                                        await GetSongs.player.play();
-                                      }
-                                    },
-                                  );
+                                onPressed: (() async {
+                                  if (GetSongs.player.hasNext) {
+                                    await GetSongs.player.seekToNext();
+                                    await GetSongs.player.play();
+                                  } else {
+                                    await GetSongs.player.play();
+                                  }
                                 }),
                                 icon: const Icon(
                                   Icons.skip_next,
@@ -328,11 +303,6 @@ class _NowPlayState extends State<NowPlay> {
           GetSongs.player.durationStream,
           (position, duration) => DurationState(
               position: position, total: duration ?? Duration.zero));
-
-  // void changeToSecond(int seconds) {
-  //   Duration duration = Duration(seconds: seconds);
-  //   widget.audioPlayer.seek(duration);
-  // }
 }
 
 class DurationState {

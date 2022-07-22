@@ -1,7 +1,4 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:lottie/lottie.dart';
 import 'package:musicapp/Database/favoritedb.dart';
 import 'package:musicapp/childscreen/nowplaying.dart';
@@ -16,33 +13,10 @@ class FavoriteScreen extends StatefulWidget {
 }
 
 class _FavoriteScreenState extends State<FavoriteScreen> {
-  // final OnAudioQuery audioQuery = OnAudioQuery();
-  // final AudioPlayer audioPlayer = AudioPlayer();
-
-  static ConcatenatingAudioSource createSongList(List<SongModel> song) {
-    List<AudioSource> source = [];
-    for (var songs in song) {
-      source.add(AudioSource.uri(Uri.parse(songs.uri!)));
-    }
-    return ConcatenatingAudioSource(children: source);
-  }
-
-  // playSong(String? uri) {
-  //   try {
-  //     //song might be currepted so using exception
-  //     audioPlayer.setAudioSource(
-  //       AudioSource.uri(
-  //         Uri.parse(uri!),
-  //       ),
-  //     );
-  //     audioPlayer.play();
-  //   } on Exception {
-  //     log("Error parsing song");
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
+    FocusManager.instance.primaryFocus?.unfocus();
+
     return ValueListenableBuilder(
         valueListenable: FavoriteDB.favoriteSongs,
         builder: (BuildContext ctx, List<SongModel> favorData, Widget? child) {
@@ -76,6 +50,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                   child: FavoriteDB.favoriteSongs.value.isEmpty
                       ? Center(
                           child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Lottie.asset(
                               'assets/fav.json',
@@ -101,25 +76,21 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                                   itemBuilder: (ctx, index) {
                                     return ListTile(
                                       onTap: () {
-                                        FavoriteDB.favoriteSongs
-                                            .notifyListeners();
+                                        // FavoriteDB.favoriteSongs
+                                        //     .notifyListeners();
                                         List<SongModel> newlist = [
                                           ...favorData
                                         ];
                                         setState(() {});
+                                        GetSongs.player.stop();
                                         GetSongs.player.setAudioSource(
-                                            createSongList(newlist),
+                                            GetSongs.createSongList(newlist),
                                             initialIndex: index);
                                         GetSongs.player.play();
                                         Navigator.of(context)
                                             .push(MaterialPageRoute(
                                                 builder: (ctx) => NowPlay(
                                                       playerSong: newlist,
-
-                                                      // songModel: favorData,
-                                                      // song: newlist,
-                                                      // index: index,
-                                                      // audioPlayer: audioPlayer,
                                                     )));
                                       },
                                       leading: QueryArtworkWidget(
@@ -144,8 +115,10 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                                       ),
                                       trailing: IconButton(
                                           onPressed: () {
-                                            // FavoriteDB.favoriteSongs
-                                            //     .notifyListeners();
+                                            // FavoriteDB.favoriteSongs.value
+                                            //     .removeAt(index);
+                                            FavoriteDB.favoriteSongs
+                                                .notifyListeners();
                                             FavoriteDB.delete(
                                                 favorData[index].id);
                                             setState(() {});

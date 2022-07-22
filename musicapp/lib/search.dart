@@ -82,7 +82,8 @@ class _SearchBarState extends State<SearchBar> {
                               padding: const EdgeInsets.only(top: 20),
                               child: ListTile(
                                 leading: QueryArtworkWidget(
-                                    nullArtworkWidget: Icon(Icons.music_note),
+                                    nullArtworkWidget:
+                                        const Icon(Icons.music_note),
                                     artworkFit: BoxFit.cover,
                                     id: data.id,
                                     type: ArtworkType.AUDIO),

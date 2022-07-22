@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
+import 'package:musicapp/Database/favoritedb.dart';
 
 import 'package:musicapp/childscreen/nowplaying.dart';
 import 'package:musicapp/getsongstorage.dart';
@@ -25,10 +27,11 @@ class _MiniPlayerState extends State<MiniPlayer> {
   @override
   Widget build(BuildContext context) {
     return AnimatedContainer(
+      color: Colors.transparent,
       duration: const Duration(milliseconds: 500),
       curve: Curves.easeInOut,
       //height: MediaQuery.of(context).size.height * 0.2,
-      width: MediaQuery.of(context).size.width * 0.8,
+      width: double.infinity,
       height: 70,
       child: ListTile(
         onTap: () {
@@ -43,19 +46,22 @@ class _MiniPlayerState extends State<MiniPlayer> {
         iconColor: Colors.black,
         textColor: Colors.black,
         leading: Padding(
-          padding: const EdgeInsets.only(left: 1),
+          padding: const EdgeInsets.all(0),
           child: Container(
             height: MediaQuery.of(context).size.height * 0.2,
             width: MediaQuery.of(context).size.width * 0.2,
             decoration: const BoxDecoration(color: Colors.transparent),
             child: QueryArtworkWidget(
+              artworkQuality: FilterQuality.high,
+              artworkFit: BoxFit.fill,
               artworkBorder: BorderRadius.circular(30),
-              nullArtworkWidget: const Icon(
-                Icons.music_note,
-                size: 40,
-              ),
-              artworkHeight: 400,
-              artworkWidth: 400,
+              nullArtworkWidget: Lottie.asset('assets/mini.json'),
+              // const Icon(
+              //   Icons.music_note,
+              //   size: 40,
+              // ),
+              // artworkHeight: 200,
+              // artworkWidth: 200,
               id: GetSongs.playingSongs[GetSongs.player.currentIndex!].id,
               type: ArtworkType.AUDIO,
             ),
@@ -64,7 +70,8 @@ class _MiniPlayerState extends State<MiniPlayer> {
         title: SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Text(
-            GetSongs.playingSongs[GetSongs.currentIndes].displayNameWOExt,
+            GetSongs
+                .playingSongs[GetSongs.player.currentIndex!].displayNameWOExt,
             style:
                 const TextStyle(fontSize: 16, overflow: TextOverflow.ellipsis),
           ),
@@ -72,38 +79,74 @@ class _MiniPlayerState extends State<MiniPlayer> {
         subtitle: SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Text(
-            "${GetSongs.playingSongs[GetSongs.currentIndes].artist}",
+            "${GetSongs.playingSongs[GetSongs.player.currentIndex!].artist}",
             style:
                 const TextStyle(fontSize: 11, overflow: TextOverflow.ellipsis),
           ),
         ),
-        trailing: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-              shape: const CircleBorder(),
-              primary: Colors.black,
-              onPrimary: Colors.green),
-          onPressed: () async {
-            if (GetSongs.player.playing) {
-              await GetSongs.player.pause();
-              setState(() {});
-            }
-          },
-          child: StreamBuilder<bool>(
-            stream: GetSongs.player.playingStream,
-            builder: (context, snapshot) {
-              bool? playingStage = snapshot.data;
-              if (playingStage != null && playingStage) {
-                return const Icon(
-                  Icons.pause_circle_outline,
-                  size: 35,
-                );
-              } else {
-                return const Icon(
-                  Icons.play_circle_outline,
-                  size: 35,
-                );
-              }
-            },
+        trailing: FittedBox(
+          fit: BoxFit.fill,
+          child: Row(
+            children: [
+              IconButton(
+                  onPressed: () async {
+                    if (GetSongs.player.hasPrevious) {
+                      await GetSongs.player.seekToPrevious();
+                      await GetSongs.player.play();
+                    } else {
+                      await GetSongs.player.play();
+                    }
+                  },
+                  icon: const Icon(
+                    Icons.skip_previous,
+                    size: 35,
+                  )),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    shape: const CircleBorder(),
+                    primary: Colors.black,
+                    onPrimary: Colors.green),
+                onPressed: () async {
+                  if (GetSongs.player.playing) {
+                    await GetSongs.player.pause();
+                    setState(() {});
+                  } else {
+                    await GetSongs.player.play();
+                    setState(() {});
+                  }
+                },
+                child: StreamBuilder<bool>(
+                  stream: GetSongs.player.playingStream,
+                  builder: (context, snapshot) {
+                    bool? playingStage = snapshot.data;
+                    if (playingStage != null && playingStage) {
+                      return const Icon(
+                        Icons.pause_circle_outline,
+                        size: 35,
+                      );
+                    } else {
+                      return const Icon(
+                        Icons.play_circle_outline,
+                        size: 35,
+                      );
+                    }
+                  },
+                ),
+              ),
+              IconButton(
+                  onPressed: (() async {
+                    if (GetSongs.player.hasNext) {
+                      await GetSongs.player.seekToNext();
+                      await GetSongs.player.play();
+                    } else {
+                      await GetSongs.player.play();
+                    }
+                  }),
+                  icon: const Icon(
+                    Icons.skip_next,
+                    size: 35,
+                  )),
+            ],
           ),
         ),
       ),
