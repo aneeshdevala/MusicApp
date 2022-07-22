@@ -101,8 +101,8 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                                   itemBuilder: (ctx, index) {
                                     return ListTile(
                                       onTap: () {
-                                        // FavoriteDB.favoriteSongs
-                                        //     .notifyListeners();
+                                        FavoriteDB.favoriteSongs
+                                            .notifyListeners();
                                         List<SongModel> newlist = [
                                           ...favorData
                                         ];

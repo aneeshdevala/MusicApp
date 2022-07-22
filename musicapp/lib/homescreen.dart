@@ -24,21 +24,21 @@ class HomeScreen extends StatefulWidget {
 
 class HomeScreenState extends State<HomeScreen> {
   final OnAudioQuery audioQuery = OnAudioQuery();
-  final AudioPlayer _audioPlayer = AudioPlayer();
+  // final AudioPlayer _audioPlayer = AudioPlayer();
 
-  playSong(String? uri) {
-    try {
-      //song might be currepted so using exception
-      _audioPlayer.setAudioSource(
-        AudioSource.uri(
-          Uri.parse(uri!),
-        ),
-      );
-      _audioPlayer.play();
-    } on Exception {
-      log("Error parsing song");
-    }
-  }
+  // playSong(String? uri) {
+  //   try {
+  //     //song might be currepted so using exception
+  //     _audioPlayer.setAudioSource(
+  //       AudioSource.uri(
+  //         Uri.parse(uri!),
+  //       ),
+  //     );
+  //     _audioPlayer.play();
+  //   } on Exception {
+  //     log("Error parsing song");
+  //   }
+  // }
 
   @override
   void initState() {
@@ -225,35 +225,34 @@ class HomeScreenState extends State<HomeScreen> {
                 mainAxisSpacing: 2,
               ),
               itemCount: item.data!.length,
-              itemBuilder: (BuildContext context, int index) {
+              itemBuilder: (context, index) {
                 return GestureDetector(
                   onTap: () {
                     GetSongs.player.setAudioSource(
-                      GetSongs.createSongList(item.data!),
-                      initialIndex: index,
-                    );
-                    if (GetSongs.currentIndex != index && mounted) {
-                      Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => NowPlay(playerSong: item.data!),
-                      ));
-                      GetSongs.player.play();
-                    } else {
-                      GetSongs.currentIndex = index;
-                      Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => NowPlay(playerSong: item.data!),
-                      ));
-                    }
+                        GetSongs.createSongList(item.data!),
+                        initialIndex: index);
+                    GetSongs.player.play();
+                    // if (GetSongs.currentIndes != index && mounted) {
+                    //   Navigator.of(context).push(MaterialPageRoute(
+                    //     builder: (context) =>
+                    //         NowPlay(playerSong: [item.data![index]]),
+                    //   ));
+                    //   GetSongs.player.play();
+                    // } else {
+                    //   GetSongs.currentIndes = index;
+                    //   Navigator.of(context).push(MaterialPageRoute(
+                    //     builder: (context) =>
+                    //         NowPlay(playerSong: [item.data![index]]),
+                    //   ));
+                    // }
                     setState(() {});
-                    // Navigator.push(
-                    //     context,
-                    //     MaterialPageRoute(
-                    //       builder: (context) => NowPlay(
-                    //         song: const [],
-                    //         songModel: item.data!,
-                    //         index: index,
-                    //         audioPlayer: _audioPlayer,
-                    //       ), //songmodel Passing
-                    //     ));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => NowPlay(
+                            playerSong: item.data!,
+                          ), //songmodel Passing
+                        ));
                   },
                   child: Card(
                     shape: const RoundedRectangleBorder(

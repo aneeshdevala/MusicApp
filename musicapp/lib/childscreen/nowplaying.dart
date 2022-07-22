@@ -1,9 +1,8 @@
-import 'dart:developer';
-
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:musicapp/Database/favoritedb.dart';
 
 import 'package:musicapp/getsongstorage.dart';
 import 'package:on_audio_query/on_audio_query.dart';
@@ -12,7 +11,7 @@ import 'package:rxdart/rxdart.dart';
 import '../Database/favoritebtn.dart';
 
 class NowPlay extends StatefulWidget {
-  NowPlay({
+  const NowPlay({
     Key? key,
     required this.playerSong,
   }) : super(key: key);
@@ -26,33 +25,34 @@ class NowPlay extends StatefulWidget {
 }
 
 class _NowPlayState extends State<NowPlay> {
-  bool _isPlaying = false;
-  bool _nextSong = true;
+  bool _isPlaying = true;
   int currentIndex = 0;
 
   @override
   void initState() {
     GetSongs.player.currentIndexStream.listen((index) {
       if (index != null && mounted) {
-        setState(() {});
-        currentIndex = index;
+        setState(() {
+          currentIndex = index;
+        });
+        GetSongs.currentIndes = index;
       }
     });
-    playSong();
+    // playSong();
     super.initState();
   }
 
-  void playSong() {
-    GetSongs.player.pause();
-    try {
-      GetSongs.player.setAudioSource(
-          AudioSource.uri(Uri.parse(widget.playerSong[currentIndex].uri!)));
-      GetSongs.player.play();
-      _isPlaying = true;
-    } on Exception {
-      Text('OOOOOpppppssss');
-    }
-  }
+  // void playSong() {
+  //   GetSongs.player.play();
+  //   try {
+  //     GetSongs.player.setAudioSource(AudioSource.uri(
+  //         Uri.parse(widget.playerSong[GetSongs.player.currentIndex!].uri!)));
+  //     GetSongs.player.play();
+  //     _isPlaying = true;
+  //   } on Exception {
+  //     Text('OOOOOpppppssss');
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -80,8 +80,9 @@ class _NowPlayState extends State<NowPlay> {
                   IconButton(
                       onPressed: () {
                         Navigator.pop(context);
+                        FavoriteDB.favoriteSongs.notifyListeners();
                       },
-                      icon: const Icon(Icons.arrow_back_ios)),
+                      icon: const Icon(Icons.keyboard_arrow_down_rounded)),
                   const SizedBox(
                     height: 20,
                   ),
@@ -113,29 +114,43 @@ class _NowPlayState extends State<NowPlay> {
                         const SizedBox(
                           height: 20,
                         ),
-                        Text(
-                          widget.playerSong[currentIndex].displayNameWOExt,
-                          overflow: TextOverflow.fade,
-                          maxLines: 1,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 30,
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Text(
-                          widget.playerSong[currentIndex].artist.toString() ==
-                                  "<unknown>"
-                              ? "Unknown Artist"
-                              : widget.playerSong[currentIndex].artist
-                                  .toString(),
-                          overflow: TextOverflow.fade,
-                          maxLines: 1,
-                          style: const TextStyle(
-                            fontSize: 15,
-                          ),
+                        Row(
+                          children: [
+                            Expanded(
+                              flex: 4,
+                              child: Column(
+                                children: [
+                                  Text(
+                                    widget.playerSong[currentIndex]
+                                        .displayNameWOExt,
+                                    overflow: TextOverflow.fade,
+                                    maxLines: 1,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 30,
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  Text(
+                                    widget.playerSong[currentIndex].artist
+                                                .toString() ==
+                                            "<unknown>"
+                                        ? "Unknown Artist"
+                                        : widget.playerSong[currentIndex].artist
+                                            .toString(),
+                                    overflow: TextOverflow.fade,
+                                    maxLines: 1,
+                                    style: const TextStyle(
+                                      fontSize: 15,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            FavoriteBut(song: widget.playerSong[currentIndex])
+                          ],
                         ),
                         const SizedBox(
                           height: 10,
@@ -167,22 +182,60 @@ class _NowPlayState extends State<NowPlay> {
                           children: [
                             Padding(
                               padding: const EdgeInsets.only(top: 20),
-                              child: IconButton(
-                                  onPressed: () {
-                                    // PlayListBtn(
-                                    //     song: widget.songModel[widget.index]);
-                                  },
-                                  icon: const Icon(Icons.shuffle)),
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                    elevation: 0,
+                                    padding: const EdgeInsets.all(15),
+                                    primary: Colors.transparent,
+                                    onPrimary: Colors.black),
+                                onPressed: () {
+                                  GetSongs.player.setShuffleModeEnabled(true);
+                                  GetSongs.player.setShuffleModeEnabled(false);
+                                  const ScaffoldMessenger(
+                                      child: SnackBar(
+                                          content: Text('Shuffle Enabled')));
+                                },
+                                child: StreamBuilder<bool>(
+                                    stream: GetSongs
+                                        .player.shuffleModeEnabledStream,
+                                    builder: (context, snapshot) {
+                                      bool? shuffleState = snapshot.data;
+                                      if (shuffleState != null &&
+                                          shuffleState) {
+                                        return const Icon(
+                                          Icons.shuffle,
+                                          color: Colors.white,
+                                          size: 25,
+                                        );
+                                      } else {
+                                        return const Icon(
+                                          Icons.shuffle,
+                                          size: 25,
+                                          color: Colors.black,
+                                        );
+                                      }
+                                    }),
+                              ),
                             ),
                             IconButton(
                                 onPressed: (() {
                                   setState(() {
-                                    if (currentIndex > 0) {
-                                      currentIndex--;
+                                    if (GetSongs.player.hasPrevious) {
+                                      GetSongs.player.seekToPrevious();
+                                      GetSongs.player.play();
                                     } else {
-                                      currentIndex = GetSongs.currentIndex - 1;
+                                      GetSongs.player.play();
                                     }
-                                    playSong();
+                                    // if (currentIndex > 0) {
+                                    //   setState(() {
+                                    //     currentIndex--;
+                                    //   });
+                                    // } else {
+                                    //   currentIndex =
+                                    //       widget.playerSong.length - 1;
+                                    // }
+                                    // //playSong();
+                                    // GetSongs.player.play;
                                   });
                                 }),
                                 icon: const Icon(
@@ -206,28 +259,53 @@ class _NowPlayState extends State<NowPlay> {
                                 )),
                             IconButton(
                                 onPressed: (() {
-                                  setState(() {
-                                    if (currentIndex <
-                                        widget.playerSong.length - 1) {
-                                      currentIndex++;
-                                    } else {
-                                      currentIndex = 0;
-                                    }
-                                    playSong();
-                                  });
+                                  setState(
+                                    () async {
+                                      if (GetSongs.player.hasNext) {
+                                        await GetSongs.player.seekToNext();
+                                        await GetSongs.player.play();
+                                      } else {
+                                        await GetSongs.player.play();
+                                      }
+                                    },
+                                  );
                                 }),
                                 icon: const Icon(
                                   Icons.skip_next,
                                   size: 50,
                                 )),
-                            // IconButton(
-                            //     onPressed: () {},
-                            //     icon: const Icon(Icons.repeat)),
-
                             Padding(
                               padding: const EdgeInsets.only(top: 20),
-                              child: FavoriteBut(
-                                  song: widget.playerSong[currentIndex]),
+                              child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                      elevation: 0,
+                                      primary: Colors.transparent,
+                                      onPrimary: Colors.black),
+                                  onPressed: () {
+                                    GetSongs.player.loopMode == LoopMode.one
+                                        ? GetSongs.player
+                                            .setLoopMode(LoopMode.all)
+                                        : GetSongs.player
+                                            .setLoopMode(LoopMode.one);
+                                  },
+                                  child: StreamBuilder<LoopMode>(
+                                    stream: GetSongs.player.loopModeStream,
+                                    builder: (context, snapshot) {
+                                      final loopMode = snapshot.data;
+                                      if (LoopMode.one == loopMode) {
+                                        return const Icon(
+                                          Icons.repeat_one,
+                                          color: Colors.white,
+                                          size: 25,
+                                        );
+                                      } else {
+                                        return const Icon(
+                                          Icons.repeat,
+                                          size: 30,
+                                        );
+                                      }
+                                    },
+                                  )),
                             ),
                           ],
                         ),

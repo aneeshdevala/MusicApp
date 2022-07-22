@@ -1,64 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:just_audio/just_audio.dart';
 
 import 'package:musicapp/childscreen/nowplaying.dart';
 import 'package:musicapp/homescreen.dart';
+
 import 'package:on_audio_query/on_audio_query.dart';
 
 import 'getsongstorage.dart';
 
+ValueNotifier<List<SongModel>> temp = ValueNotifier([]);
+
 class SearchBar extends StatefulWidget {
   const SearchBar({Key? key}) : super(key: key);
-
   @override
   State<SearchBar> createState() => _SearchBarState();
 }
 
 class _SearchBarState extends State<SearchBar> {
-  final OnAudioQuery _audioQuery = OnAudioQuery();
-  List<SongModel> searchSongs = [];
-  Future<void> getSongs() async {
-    searchSongs = await Future.value(_audioQuery.querySongs(
-        sortType: null,
-        orderType: OrderType.ASC_OR_SMALLER,
-        uriType: UriType.EXTERNAL,
-        ignoreCase: true));
-  }
-
-  //List<SongModel> allsongs = [];
-
-  List<SongModel> allSongs = [];
-  @override
-  initState() {
-    // at the beginning, all users are shown
-    allSongs = searchSongs;
-
-    super.initState();
-  }
-
-  void _runFilter(String enteredKeyword) {
-    List<SongModel> results = [];
-    if (enteredKeyword.isEmpty) {
-      // if the search field is empty or only contains white-space, we'll display all songs
-      results = searchSongs;
-    } else {
-      results = searchSongs
-          .where((name) => name.displayNameWOExt
-              .toLowerCase()
-              .contains(enteredKeyword.toLowerCase()))
-          .toList();
-      // we use the toLowerCase() method to make it case-insensitive
-    }
-
-    // Refresh the UI
-    setState(() {
-      allSongs = results;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    getSongs();
     return Container(
       height: double.infinity,
       width: double.infinity,
@@ -70,99 +29,100 @@ class _SearchBarState extends State<SearchBar> {
             end: Alignment.bottomCenter),
       ),
       child: Scaffold(
+        backgroundColor: Colors.transparent,
+        extendBody: true,
+        appBar: AppBar(
+          toolbarHeight: 90,
+          automaticallyImplyLeading: false,
+          elevation: 0,
           backgroundColor: Colors.transparent,
-          body: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 10, left: 30, right: 20),
-              child: SafeArea(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    const Text(
-                      'Find Your Songs',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 19),
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    TextField(
-                      //  autofocus: true,
-
-                      onChanged: (value) => _runFilter(value),
-                      decoration: const InputDecoration(
-                          labelText: 'Search', suffixIcon: Icon(Icons.search)),
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    allSongs.isNotEmpty
-                        ? Expanded(
-                            child: ListView.builder(
-                            itemCount: allSongs.length,
-                            itemBuilder: (context, int index) =>
-                                GestureDetector(
-                              onTap: (() {
-                                setState(() {});
-                                GetSongs.player.setAudioSource(
-                                  GetSongs.createSongList(allSongs),
-                                  initialIndex: index,
-                                );
-                                GetSongs.player.play();
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => NowPlay(
-                                              playerSong: allSongs,
-                                            )));
-                                setState(() {});
-
-                                // setState(() {});
-                                // Navigator.push(
-                                //     context,
-                                //     MaterialPageRoute(
-                                //       builder: (context) =>
-                                //           NowPlay(playerSong: HomeScreen.song
-                                //               // song: [allSongs[index]],
-                                //               // songModel: [allSongs[index]],
-                                //               // index: index,
-                                //               // audioPlayer: audioPlayer
-                                //               ),
-                                //     ));
-                              }),
-                              child: Card(
-                                color: Colors.transparent,
-                                elevation: 0,
-                                margin:
-                                    const EdgeInsets.symmetric(vertical: 10),
-                                child: ListTile(
-                                  leading: QueryArtworkWidget(
-                                    id: allSongs[index].id,
-                                    type: ArtworkType.AUDIO,
-                                    nullArtworkWidget:
-                                        const Icon(Icons.music_note_outlined),
-                                    artworkFit: BoxFit.cover,
-                                  ),
-                                  title: Text(allSongs[index].displayNameWOExt),
-                                ),
-                              ),
-                            ),
-                          ))
-                        : Expanded(
-                            child: Center(
-                              child: Image.asset(
-                                  'assets/undraw_Quiz_re_aol4-removebg-preview.png'),
-                            ),
-                          ),
-                  ],
-                ),
-              ),
+          title: Padding(
+            padding: const EdgeInsets.only(top: 30),
+            child: TextField(
+              autofocus: true,
+              decoration: const InputDecoration(
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(20))),
+                  filled: true,
+                  fillColor: Colors.transparent,
+                  hintText: 'Search',
+                  prefixIcon: Icon(Icons.search)),
+              onChanged: (String? value) {
+                if (value != null && value.isNotEmpty) {
+                  temp.value.clear();
+                  for (SongModel item in HomeScreen.song) {
+                    if (item.title
+                        .toLowerCase()
+                        .contains(value.toLowerCase())) {
+                      temp.value.add(item);
+                    }
+                  }
+                }
+                temp.notifyListeners();
+              },
             ),
-          )),
+          ),
+        ),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                ValueListenableBuilder(
+                    valueListenable: temp,
+                    builder: (BuildContext context, List<SongModel> songData,
+                        Widget? child) {
+                      return ListView.separated(
+                          shrinkWrap: true,
+                          physics: const ClampingScrollPhysics(),
+                          scrollDirection: Axis.vertical,
+                          itemBuilder: (context, index) {
+                            final data = songData[index];
+                            return Padding(
+                              padding: const EdgeInsets.only(top: 20),
+                              child: ListTile(
+                                leading: QueryArtworkWidget(
+                                    nullArtworkWidget: Icon(Icons.music_note),
+                                    artworkFit: BoxFit.cover,
+                                    id: data.id,
+                                    type: ArtworkType.AUDIO),
+                                title: Text(
+                                  data.title,
+                                  style: const TextStyle(color: Colors.black),
+                                ),
+                                onTap: () {
+                                  final searchIndex = creatSearchIndex(data);
+                                  FocusScope.of(context).unfocus();
+                                  GetSongs.player.setAudioSource(
+                                      GetSongs.createSongList(HomeScreen.song),
+                                      initialIndex: searchIndex);
+                                  GetSongs.player.play();
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (ctx) => NowPlay(
+                                          playerSong: HomeScreen.song)));
+                                },
+                              ),
+                            );
+                          },
+                          separatorBuilder: (ctx, index) {
+                            return const Divider();
+                          },
+                          itemCount: temp.value.length);
+                    }),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
+  }
+
+  int? creatSearchIndex(SongModel data) {
+    for (int i = 0; i < HomeScreen.song.length; i++) {
+      if (data.id == HomeScreen.song[i].id) {
+        return i;
+      }
+    }
+    return null;
   }
 }
