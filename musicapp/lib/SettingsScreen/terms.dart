@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class Terms extends StatelessWidget {
-  const Terms({Key? key}) : super(key: key);
+class About extends StatelessWidget {
+  const About({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -9,12 +9,13 @@ class Terms extends StatelessWidget {
       height: double.infinity,
       width: double.infinity,
       decoration: const BoxDecoration(
-        gradient: LinearGradient(
-            colors: [Color(0xFFDD4C4C), Color.fromARGB(255, 255, 255, 255)],
-            stops: [0.5, 1],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter),
-      ),
+          gradient: LinearGradient(colors: [
+        Color.fromARGB(255, 156, 0, 78),
+        Color.fromARGB(255, 0, 0, 0)
+      ], stops: [
+        0.1,
+        1
+      ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(

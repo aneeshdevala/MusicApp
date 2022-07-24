@@ -18,100 +18,91 @@ class SearchBar extends StatefulWidget {
 class _SearchBarState extends State<SearchBar> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: double.infinity,
-      width: double.infinity,
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-            colors: [Color(0xFFDD4C4C), Color.fromARGB(255, 255, 255, 255)],
-            stops: [0.5, 1],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter),
-      ),
-      child: Scaffold(
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      extendBody: true,
+      appBar: AppBar(
+        toolbarHeight: 90,
+        automaticallyImplyLeading: false,
+        elevation: 0,
         backgroundColor: Colors.transparent,
-        extendBody: true,
-        appBar: AppBar(
-          toolbarHeight: 90,
-          automaticallyImplyLeading: false,
-          elevation: 0,
-          backgroundColor: Colors.transparent,
-          title: Padding(
-            padding: const EdgeInsets.only(top: 30),
-            child: TextField(
-              autofocus: true,
-              decoration: const InputDecoration(
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(20))),
-                  filled: true,
-                  fillColor: Colors.transparent,
-                  hintText: 'Search',
-                  prefixIcon: Icon(Icons.search)),
-              onChanged: (String? value) {
-                if (value != null && value.isNotEmpty) {
-                  temp.value.clear();
-                  for (SongModel item in HomeScreen.song) {
-                    if (item.title
-                        .toLowerCase()
-                        .contains(value.toLowerCase())) {
-                      temp.value.add(item);
-                    }
+        title: Padding(
+          padding: const EdgeInsets.only(top: 30),
+          child: TextField(
+            autofocus: true,
+            decoration: const InputDecoration(
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(20))),
+                filled: true,
+                fillColor: Colors.transparent,
+                hintText: 'Search',
+                hintStyle: TextStyle(color: Colors.grey),
+                prefixIcon: Icon(Icons.search)),
+            onChanged: (String? value) {
+              if (value != null && value.isNotEmpty) {
+                temp.value.clear();
+                for (SongModel item in HomeScreen.song) {
+                  if (item.title.toLowerCase().contains(value.toLowerCase())) {
+                    temp.value.add(item);
                   }
                 }
-                temp.notifyListeners();
-              },
-            ),
+              }
+              temp.notifyListeners();
+            },
           ),
         ),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                ValueListenableBuilder(
-                    valueListenable: temp,
-                    builder: (BuildContext context, List<SongModel> songData,
-                        Widget? child) {
-                      return ListView.separated(
-                          shrinkWrap: true,
-                          physics: const ClampingScrollPhysics(),
-                          scrollDirection: Axis.vertical,
-                          itemBuilder: (context, index) {
-                            final data = songData[index];
-                            return Padding(
-                              padding: const EdgeInsets.only(top: 20),
-                              child: ListTile(
-                                leading: QueryArtworkWidget(
-                                    nullArtworkWidget:
-                                        const Icon(Icons.music_note),
-                                    artworkFit: BoxFit.cover,
-                                    id: data.id,
-                                    type: ArtworkType.AUDIO),
-                                title: Text(
-                                  data.title,
-                                  style: const TextStyle(color: Colors.black),
-                                ),
-                                onTap: () {
-                                  final searchIndex = creatSearchIndex(data);
-                                  FocusScope.of(context).unfocus();
-                                  GetSongs.player.setAudioSource(
-                                      GetSongs.createSongList(HomeScreen.song),
-                                      initialIndex: searchIndex);
-                                  GetSongs.player.play();
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (ctx) => NowPlay(
-                                          playerSong: HomeScreen.song)));
-                                },
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              ValueListenableBuilder(
+                  valueListenable: temp,
+                  builder: (BuildContext context, List<SongModel> songData,
+                      Widget? child) {
+                    return ListView.separated(
+                        shrinkWrap: true,
+                        physics: const ClampingScrollPhysics(),
+                        scrollDirection: Axis.vertical,
+                        itemBuilder: (context, index) {
+                          final data = songData[index];
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 20),
+                            child: ListTile(
+                              leading: QueryArtworkWidget(
+                                  nullArtworkWidget: const Icon(
+                                    Icons.music_note_outlined,
+                                    color: Colors.white,
+                                    size: 35,
+                                  ),
+                                  artworkFit: BoxFit.cover,
+                                  id: data.id,
+                                  type: ArtworkType.AUDIO),
+                              title: Text(
+                                data.title,
+                                style: const TextStyle(color: Colors.white),
                               ),
-                            );
-                          },
-                          separatorBuilder: (ctx, index) {
-                            return const Divider();
-                          },
-                          itemCount: temp.value.length);
-                    }),
-              ],
-            ),
+                              onTap: () {
+                                final searchIndex = creatSearchIndex(data);
+                                FocusScope.of(context).unfocus();
+                                GetSongs.player.setAudioSource(
+                                    GetSongs.createSongList(HomeScreen.song),
+                                    initialIndex: searchIndex);
+                                GetSongs.player.play();
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (ctx) =>
+                                        NowPlay(playerSong: HomeScreen.song)));
+                              },
+                            ),
+                          );
+                        },
+                        separatorBuilder: (ctx, index) {
+                          return const Divider();
+                        },
+                        itemCount: temp.value.length);
+                  }),
+            ],
           ),
         ),
       ),

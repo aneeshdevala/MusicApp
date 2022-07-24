@@ -44,13 +44,13 @@ class _FavoriteButState extends State<FavoriteBut> {
               FavoriteDB.favoriteSongs.notifyListeners();
             },
             icon: FavoriteDB.isfavor(widget.song)
-                ? const Icon(
+                ? Icon(
                     Icons.favorite,
-                    color: Colors.red,
+                    color: Colors.red[900],
                   )
-                : const Icon(
+                : Icon(
                     Icons.favorite_border,
-                    color: Color.fromARGB(255, 0, 0, 0),
+                    color: Color.fromARGB(255, 255, 255, 255),
                   ),
           );
         });

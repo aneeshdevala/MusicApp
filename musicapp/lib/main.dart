@@ -19,10 +19,10 @@ Future<void> main() async {
   await Hive.openBox<MusicPlayer>('playlistDB');
 
   await JustAudioBackground.init(
-    androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
-    androidNotificationChannelName: 'Audio playback',
-    androidNotificationOngoing: true,
-  );
+      androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
+      androidNotificationChannelName: 'Audio playback',
+      androidNotificationOngoing: true,
+      preloadArtwork: true);
 
   runApp(const MyApp());
 }
@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(primarySwatch: Colors.lime),
+      theme: ThemeData(primarySwatch: Colors.grey),
       home: const SplashScreen(),
     );
   }

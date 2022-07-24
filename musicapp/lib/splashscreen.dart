@@ -14,8 +14,17 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
+    FocusManager.instance.primaryFocus?.unfocus();
     return AnimatedSplashScreen(
-      splash: Image.asset('assets/Musifyofficial.png'),
+      splashIconSize: 300,
+      splash: SizedBox(
+        child: Center(
+          child: Image.asset(
+            'assets/Group 6.png',
+            fit: BoxFit.fill,
+          ),
+        ),
+      ),
       backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       nextScreen: const BottomScreens(),
       duration: 2000,

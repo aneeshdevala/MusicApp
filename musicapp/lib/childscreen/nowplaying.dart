@@ -6,6 +6,7 @@ import 'package:lottie/lottie.dart';
 import 'package:musicapp/Database/favoritedb.dart';
 
 import 'package:musicapp/getsongstorage.dart';
+import 'package:musicapp/widgets/textanimation.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -46,8 +47,8 @@ class _NowPlayState extends State<NowPlay> {
       width: double.infinity,
       decoration: const BoxDecoration(
         gradient: LinearGradient(colors: [
-          Color.fromARGB(255, 214, 201, 18),
-          Color.fromARGB(255, 233, 211, 211)
+          Color.fromARGB(255, 156, 0, 78),
+          Color.fromARGB(255, 0, 0, 0)
         ], stops: [
           0.5,
           1
@@ -65,12 +66,15 @@ class _NowPlayState extends State<NowPlay> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   IconButton(
-                      onPressed: () {
-                        setState(() {});
-                        Navigator.pop(context);
-                        FavoriteDB.favoriteSongs.notifyListeners();
-                      },
-                      icon: const Icon(Icons.keyboard_arrow_down_rounded)),
+                    onPressed: () {
+                      setState(() {});
+                      Navigator.pop(context);
+                      FavoriteDB.favoriteSongs.notifyListeners();
+                    },
+                    icon: const Icon(Icons.keyboard_arrow_down_rounded),
+                    color: Colors.white,
+                    iconSize: 40,
+                  ),
                   const SizedBox(
                     height: 20,
                   ),
@@ -111,11 +115,9 @@ class _NowPlayState extends State<NowPlay> {
                               flex: 4,
                               child: Column(
                                 children: [
-                                  Text(
-                                    widget.playerSong[currentIndex]
+                                  AnimatedText(
+                                    text: widget.playerSong[currentIndex]
                                         .displayNameWOExt,
-                                    overflow: TextOverflow.fade,
-                                    maxLines: 1,
                                     style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 30,
@@ -124,17 +126,71 @@ class _NowPlayState extends State<NowPlay> {
                                   const SizedBox(
                                     height: 10,
                                   ),
-                                  Text(
-                                    widget.playerSong[currentIndex].artist
-                                                .toString() ==
-                                            "<unknown>"
-                                        ? "Unknown Artist"
-                                        : widget.playerSong[currentIndex].artist
-                                            .toString(),
-                                    overflow: TextOverflow.fade,
-                                    maxLines: 1,
-                                    style: const TextStyle(
-                                      fontSize: 15,
+                                  Expanded(
+                                    child: Row(
+                                      children: [
+                                        Text(
+                                          widget.playerSong[currentIndex].artist
+                                                      .toString() ==
+                                                  "<unknown>"
+                                              ? "Unknown Artist"
+                                              : widget.playerSong[currentIndex]
+                                                  .artist
+                                                  .toString(),
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 1,
+                                          style: const TextStyle(
+                                            fontSize: 15,
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          width: 10,
+                                        ),
+                                        IconButton(
+                                          icon: const Icon(Icons.volume_up),
+                                          color: Colors.white,
+                                          onPressed: () {
+                                            showSliderDialog(
+                                              context: context,
+                                              title: "Adjust volume",
+                                              divisions: 10,
+                                              min: 0.0,
+                                              max: 1.0,
+                                              value: GetSongs.player.volume,
+                                              stream:
+                                                  GetSongs.player.volumeStream,
+                                              onChanged:
+                                                  GetSongs.player.setVolume,
+                                            );
+                                          },
+                                        ),
+                                        StreamBuilder<double>(
+                                          stream: GetSongs.player.speedStream,
+                                          builder: (context, snapshot) =>
+                                              IconButton(
+                                            icon: Text(
+                                                "${snapshot.data?.toStringAsFixed(1)}x",
+                                                style: const TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight:
+                                                        FontWeight.bold)),
+                                            onPressed: () {
+                                              showSliderDialog(
+                                                context: context,
+                                                title: "Adjust speed",
+                                                divisions: 10,
+                                                min: 0.5,
+                                                max: 1.5,
+                                                value: GetSongs.player.speed,
+                                                stream:
+                                                    GetSongs.player.speedStream,
+                                                onChanged:
+                                                    GetSongs.player.setSpeed,
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ],
@@ -196,13 +252,13 @@ class _NowPlayState extends State<NowPlay> {
                                         return const Icon(
                                           Icons.shuffle,
                                           color: Colors.white,
-                                          size: 25,
+                                          size: 35,
                                         );
                                       } else {
                                         return const Icon(
                                           Icons.shuffle,
-                                          size: 25,
-                                          color: Colors.black,
+                                          size: 35,
+                                          color: Colors.white,
                                         );
                                       }
                                     }),
@@ -219,24 +275,46 @@ class _NowPlayState extends State<NowPlay> {
                                 },
                                 icon: const Icon(
                                   Icons.skip_previous,
+                                  color: Colors.white,
                                   size: 50,
                                 )),
-                            IconButton(
-                                onPressed: () {
-                                  setState(() {
-                                    if (_isPlaying) {
-                                      GetSongs.player.pause();
-                                    } else {
-                                      GetSongs.player.play();
-                                    }
-                                    _isPlaying = !_isPlaying;
-                                  });
+                            Padding(
+                              padding: const EdgeInsets.only(left: 15, top: 15),
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                    shape: const CircleBorder(),
+                                    primary: Colors.black,
+                                    onPrimary: Colors.green),
+                                onPressed: () async {
+                                  if (GetSongs.player.playing) {
+                                    await GetSongs.player.pause();
+                                    setState(() {});
+                                  } else {
+                                    await GetSongs.player.play();
+                                    setState(() {});
+                                  }
                                 },
-                                icon: Icon(
-                                  _isPlaying ? Icons.pause : Icons.play_arrow,
-                                  size: 50,
-                                )),
+                                child: StreamBuilder<bool>(
+                                  stream: GetSongs.player.playingStream,
+                                  builder: (context, snapshot) {
+                                    bool? playingStage = snapshot.data;
+                                    if (playingStage != null && playingStage) {
+                                      return const Icon(
+                                        Icons.pause_circle_outline,
+                                        size: 60,
+                                      );
+                                    } else {
+                                      return const Icon(
+                                        Icons.play_circle_outline,
+                                        size: 60,
+                                      );
+                                    }
+                                  },
+                                ),
+                              ),
+                            ),
                             IconButton(
+                                highlightColor: Colors.green,
                                 onPressed: (() async {
                                   if (GetSongs.player.hasNext) {
                                     await GetSongs.player.seekToNext();
@@ -247,6 +325,7 @@ class _NowPlayState extends State<NowPlay> {
                                 }),
                                 icon: const Icon(
                                   Icons.skip_next,
+                                  color: Colors.white,
                                   size: 50,
                                 )),
                             Padding(
@@ -270,12 +349,13 @@ class _NowPlayState extends State<NowPlay> {
                                       if (LoopMode.one == loopMode) {
                                         return const Icon(
                                           Icons.repeat_one,
-                                          color: Colors.white,
-                                          size: 25,
+                                          color: Colors.red,
+                                          size: 30,
                                         );
                                       } else {
                                         return const Icon(
                                           Icons.repeat,
+                                          color: Colors.white,
                                           size: 30,
                                         );
                                       }
@@ -295,6 +375,55 @@ class _NowPlayState extends State<NowPlay> {
       ),
     );
     // });
+  }
+
+  void showSliderDialog({
+    required BuildContext context,
+    required String title,
+    required int divisions,
+    required double min,
+    required double max,
+    String valueSuffix = '',
+    // TODO: Replace these two by ValueStream.
+    required double value,
+    required Stream<double> stream,
+    required ValueChanged<double> onChanged,
+  }) {
+    showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        title: Text(
+          title,
+          textAlign: TextAlign.center,
+          style: const TextStyle(color: Colors.white),
+        ),
+        content: StreamBuilder<double>(
+          stream: stream,
+          builder: (context, snapshot) => SizedBox(
+            height: 100.0,
+            child: Column(
+              children: [
+                Text('${snapshot.data?.toStringAsFixed(1)}$valueSuffix',
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontFamily: 'Fixed',
+                        fontWeight: FontWeight.bold,
+                        fontSize: 24.0)),
+                Slider(
+                  divisions: divisions,
+                  min: min,
+                  max: max,
+                  value: snapshot.data ?? value,
+                  onChanged: onChanged,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   Stream<DurationState> get _durationStateStream =>

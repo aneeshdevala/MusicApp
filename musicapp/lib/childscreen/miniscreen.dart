@@ -4,6 +4,7 @@ import 'package:musicapp/Database/favoritedb.dart';
 
 import 'package:musicapp/childscreen/nowplaying.dart';
 import 'package:musicapp/getsongstorage.dart';
+import 'package:musicapp/widgets/textanimation.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 
 class MiniPlayer extends StatefulWidget {
@@ -43,8 +44,8 @@ class _MiniPlayerState extends State<MiniPlayer> {
             ),
           );
         },
-        iconColor: Colors.black,
-        textColor: Colors.black,
+        iconColor: const Color.fromARGB(255, 180, 147, 147),
+        textColor: const Color.fromARGB(255, 255, 255, 255),
         leading: Padding(
           padding: const EdgeInsets.all(0),
           child: Container(
@@ -56,24 +57,17 @@ class _MiniPlayerState extends State<MiniPlayer> {
               artworkFit: BoxFit.fill,
               artworkBorder: BorderRadius.circular(30),
               nullArtworkWidget: Lottie.asset('assets/mini.json'),
-              // const Icon(
-              //   Icons.music_note,
-              //   size: 40,
-              // ),
-              // artworkHeight: 200,
-              // artworkWidth: 200,
               id: GetSongs.playingSongs[GetSongs.player.currentIndex!].id,
               type: ArtworkType.AUDIO,
             ),
           ),
         ),
-        title: SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Text(
-            GetSongs
-                .playingSongs[GetSongs.player.currentIndex!].displayNameWOExt,
-            style:
-                const TextStyle(fontSize: 16, overflow: TextOverflow.ellipsis),
+        title: AnimatedText(
+          text: GetSongs
+              .playingSongs[GetSongs.player.currentIndex!].displayNameWOExt,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 15,
           ),
         ),
         subtitle: SingleChildScrollView(

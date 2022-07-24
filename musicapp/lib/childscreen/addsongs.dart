@@ -21,11 +21,13 @@ class _SongListPageState extends State<SongListPage> {
         height: double.infinity,
         width: double.infinity,
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
-              colors: [Color(0xFFDD4C4C), Color.fromARGB(255, 233, 211, 211)],
-              stops: [0.5, 1],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter),
+          gradient: LinearGradient(colors: [
+            Color.fromARGB(255, 156, 0, 78),
+            Color.fromARGB(255, 0, 0, 0)
+          ], stops: [
+            0.5,
+            1
+          ], begin: Alignment.topCenter, end: Alignment.bottomCenter),
         ),
         child: Scaffold(
             backgroundColor: Colors.transparent,
@@ -43,7 +45,7 @@ class _SongListPageState extends State<SongListPage> {
                             style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
-                                color: Color.fromARGB(255, 0, 0, 0)),
+                                color: Color.fromARGB(255, 255, 255, 255)),
                           ),
                         ),
                         const SizedBox(
@@ -55,7 +57,7 @@ class _SongListPageState extends State<SongListPage> {
                             },
                             icon: const Icon(
                               Icons.arrow_back_ios,
-                              color: Color.fromARGB(255, 0, 0, 0),
+                              color: Color.fromARGB(255, 255, 255, 255),
                               size: 20,
                             ))
                       ],
@@ -80,7 +82,7 @@ class _SongListPageState extends State<SongListPage> {
                               child: Text(
                                 'NO Songs Found',
                                 style: TextStyle(
-                                    color: Color.fromARGB(255, 0, 0, 0)),
+                                    color: Color.fromARGB(255, 255, 255, 255)),
                               ),
                             );
                           }
@@ -91,8 +93,8 @@ class _SongListPageState extends State<SongListPage> {
                               itemBuilder: (ctx, index) {
                                 return ListTile(
                                   onTap: () {},
-                                  iconColor: const Color.fromARGB(255, 0, 0, 0),
-                                  textColor: const Color.fromARGB(255, 0, 0, 0),
+                                  iconColor: Color.fromARGB(255, 255, 255, 255),
+                                  textColor: Color.fromARGB(255, 255, 255, 255),
                                   leading: QueryArtworkWidget(
                                     id: item.data![index].id,
                                     type: ArtworkType.AUDIO,
@@ -102,15 +104,32 @@ class _SongListPageState extends State<SongListPage> {
                                     artworkBorder: const BorderRadius.all(
                                         Radius.circular(30)),
                                   ),
-                                  title:
-                                      Text(item.data![index].displayNameWOExt),
-                                  subtitle: Text("${item.data![index].artist}"),
+                                  title: Text(
+                                    item.data![index].displayNameWOExt,
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                  ),
+                                  subtitle: Text(
+                                    "${item.data![index].artist}",
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                  ),
                                   trailing: IconButton(
                                       onPressed: () {
-                                        playlistCheck(item.data![index]);
+                                        setState(() {
+                                          playlistCheck(item.data![index]);
+                                        });
+
                                         //     playlistnotifier.notifyListeners();
                                       },
-                                      icon: const Icon(Icons.add)),
+                                      icon: !widget.playlist
+                                              .isValueIn(item.data![index].id)
+                                          ? const Icon(Icons.add_task_rounded)
+                                          : const Icon(Icons.close_rounded),
+                                      color: !widget.playlist
+                                              .isValueIn(item.data![index].id)
+                                          ? Colors.white
+                                          : Colors.red),
                                 );
                               },
                               separatorBuilder: (ctx, index) {
@@ -131,6 +150,15 @@ class _SongListPageState extends State<SongListPage> {
           backgroundColor: Colors.black,
           content: Text(
             'Added to Playlist',
+            style: TextStyle(color: Colors.white),
+          ));
+      ScaffoldMessenger.of(context).showSnackBar(snackbar);
+    } else {
+      widget.playlist.deleteData(data.id);
+      const snackbar = SnackBar(
+          backgroundColor: Colors.black,
+          content: Text(
+            'Song deleted from Playlist',
             style: TextStyle(color: Colors.white),
           ));
       ScaffoldMessenger.of(context).showSnackBar(snackbar);

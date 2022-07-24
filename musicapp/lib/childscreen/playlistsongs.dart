@@ -18,7 +18,7 @@ class PlaylistData extends StatefulWidget {
       : super(key: key);
   final MusicPlayer playlist;
   final int folderindex;
-  static List<SongModel> playlistSongid = [];
+  // static List<SongModel> playlistSongid = [];
   @override
   State<PlaylistData> createState() => _PlaylistDataState();
 }
@@ -32,11 +32,13 @@ class _PlaylistDataState extends State<PlaylistData> {
       height: double.infinity,
       width: double.infinity,
       decoration: const BoxDecoration(
-        gradient: LinearGradient(
-            colors: [Color(0xFFDD4C4C), Color.fromARGB(255, 233, 211, 211)],
-            stops: [0.5, 1],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter),
+        gradient: LinearGradient(colors: [
+          Color.fromARGB(255, 156, 0, 78),
+          Color.fromARGB(255, 0, 0, 0)
+        ], stops: [
+          0.5,
+          1
+        ], begin: Alignment.topCenter, end: Alignment.bottomCenter),
       ),
       child: Scaffold(
         backgroundColor: Colors.transparent,
@@ -70,8 +72,7 @@ class _PlaylistDataState extends State<PlaylistData> {
                         fontSize: 30,
                         fontWeight: FontWeight.bold)),
                 ElevatedButton(
-                    style:
-                        ElevatedButton.styleFrom(primary: Colors.transparent),
+                    style: ElevatedButton.styleFrom(primary: Colors.white),
                     onPressed: () {
                       Navigator.of(context).push(MaterialPageRoute(
                           builder: (ctx) => SongListPage(
@@ -86,7 +87,7 @@ class _PlaylistDataState extends State<PlaylistData> {
                       Widget? child) {
                     playlistsong = listPlaylist(
                         value.values.toList()[widget.folderindex].songIds);
-                    PlaylistData.playlistSongid = playlistsong;
+                    //  PlaylistData.playlistSongid = playlistsong;
 
                     return ListView.separated(
                         shrinkWrap: true,
@@ -112,6 +113,7 @@ class _PlaylistDataState extends State<PlaylistData> {
                                 type: ArtworkType.AUDIO,
                                 nullArtworkWidget: const Icon(
                                   Icons.music_note,
+                                  color: Colors.white,
                                 ),
                                 errorBuilder: (context, excepion, gdb) {
                                   setState(() {});
@@ -120,11 +122,12 @@ class _PlaylistDataState extends State<PlaylistData> {
                               ),
                               title: Text(
                                 playlistsong[index].title,
-                                style: const TextStyle(fontSize: 15),
+                                style: const TextStyle(
+                                    fontSize: 15, color: Colors.white),
                               ),
                               subtitle: Text(
                                 playlistsong[index].artist!,
-                                style: const TextStyle(color: Colors.black),
+                                style: const TextStyle(color: Colors.white),
                               ),
                               trailing: IconButton(
                                   onPressed: () {
@@ -138,9 +141,9 @@ class _PlaylistDataState extends State<PlaylistData> {
                                                   begin: Alignment.topCenter,
                                                   end: Alignment.bottomCenter,
                                                   colors: [
-                                                    Color(0xFFDD4C4C),
                                                     Color.fromARGB(
-                                                        255, 233, 211, 211)
+                                                        255, 156, 0, 78),
+                                                    Color.fromARGB(255, 0, 0, 0)
                                                   ],
                                                   stops: [0.5, 1],
                                                 ),
@@ -243,7 +246,7 @@ class _PlaylistDataState extends State<PlaylistData> {
                                                               'Add to Favorite',
                                                               style: TextStyle(
                                                                   color: Colors
-                                                                      .black,
+                                                                      .white,
                                                                   fontSize: 20),
                                                             )
                                                           ],
@@ -259,7 +262,7 @@ class _PlaylistDataState extends State<PlaylistData> {
                                   },
                                   icon: const Icon(
                                     Icons.more_vert_sharp,
-                                    color: Colors.black,
+                                    color: Colors.white,
                                   )));
                         },
                         separatorBuilder: (ctx, index) {
