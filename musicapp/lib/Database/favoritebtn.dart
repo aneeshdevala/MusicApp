@@ -23,10 +23,12 @@ class _FavoriteButState extends State<FavoriteBut> {
                 //FavoriteDB.favoriteSongs.notifyListeners();
 
                 const snackBar = SnackBar(
-                    content: Text(
-                  'Removed From Favorite',
-                  style: TextStyle(color: Color.fromARGB(255, 247, 247, 247)),
-                ));
+                  content: Text(
+                    'Removed From Favorite',
+                    style: TextStyle(color: Color.fromARGB(255, 247, 247, 247)),
+                  ),
+                  duration: Duration(milliseconds: 1500),
+                );
                 ScaffoldMessenger.of(context).showSnackBar(snackBar);
               } else {
                 FavoriteDB.add(widget.song);
@@ -37,6 +39,7 @@ class _FavoriteButState extends State<FavoriteBut> {
                     'Song Added to Favorite',
                     style: TextStyle(color: Colors.white),
                   ),
+                  duration: Duration(milliseconds: 350),
                 );
                 ScaffoldMessenger.of(context).showSnackBar(snackbar);
               }

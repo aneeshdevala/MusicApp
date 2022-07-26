@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:musicapp/Database/favoritedb.dart';
 
 import 'package:musicapp/childscreen/nowplaying.dart';
 import 'package:musicapp/getsongstorage.dart';

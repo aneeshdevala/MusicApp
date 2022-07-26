@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:musicapp/model/musicplayer.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 
@@ -16,7 +15,6 @@ class _SongListPageState extends State<SongListPage> {
 
   @override
   Widget build(BuildContext context) {
-    // playlistnotifier.notifyListeners();
     return Container(
         height: double.infinity,
         width: double.infinity,
@@ -43,9 +41,9 @@ class _SongListPageState extends State<SongListPage> {
                           child: Text(
                             'Add Songs ',
                             style: TextStyle(
-                                fontSize: 20,
+                                fontSize: 25,
                                 fontWeight: FontWeight.bold,
-                                color: Color.fromARGB(255, 255, 255, 255)),
+                                color: Color.fromARGB(255, 0, 0, 0)),
                           ),
                         ),
                         const SizedBox(
@@ -54,10 +52,11 @@ class _SongListPageState extends State<SongListPage> {
                         IconButton(
                             onPressed: () {
                               Navigator.of(context).pop();
+                              setState(() {});
                             },
                             icon: const Icon(
                               Icons.arrow_back_ios,
-                              color: Color.fromARGB(255, 255, 255, 255),
+                              color: Color.fromARGB(255, 0, 0, 0),
                               size: 20,
                             ))
                       ],
@@ -82,7 +81,7 @@ class _SongListPageState extends State<SongListPage> {
                               child: Text(
                                 'NO Songs Found',
                                 style: TextStyle(
-                                    color: Color.fromARGB(255, 255, 255, 255)),
+                                    color: Color.fromARGB(255, 0, 0, 0)),
                               ),
                             );
                           }
@@ -93,8 +92,8 @@ class _SongListPageState extends State<SongListPage> {
                               itemBuilder: (ctx, index) {
                                 return ListTile(
                                   onTap: () {},
-                                  iconColor: Color.fromARGB(255, 255, 255, 255),
-                                  textColor: Color.fromARGB(255, 255, 255, 255),
+                                  iconColor: Color.fromARGB(255, 0, 0, 0),
+                                  textColor: Color.fromARGB(255, 0, 0, 0),
                                   leading: QueryArtworkWidget(
                                     id: item.data![index].id,
                                     type: ArtworkType.AUDIO,
@@ -104,32 +103,15 @@ class _SongListPageState extends State<SongListPage> {
                                     artworkBorder: const BorderRadius.all(
                                         Radius.circular(30)),
                                   ),
-                                  title: Text(
-                                    item.data![index].displayNameWOExt,
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 1,
-                                  ),
-                                  subtitle: Text(
-                                    "${item.data![index].artist}",
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 1,
-                                  ),
+                                  title:
+                                      Text(item.data![index].displayNameWOExt),
+                                  subtitle: Text("${item.data![index].artist}"),
                                   trailing: IconButton(
                                       onPressed: () {
-                                        setState(() {
-                                          playlistCheck(item.data![index]);
-                                        });
-
-                                        //     playlistnotifier.notifyListeners();
+                                        // playlistCheck(item.data![index]);
+                                        //musicListNotifier.notifyListeners();
                                       },
-                                      icon: !widget.playlist
-                                              .isValueIn(item.data![index].id)
-                                          ? const Icon(Icons.add_task_rounded)
-                                          : const Icon(Icons.close_rounded),
-                                      color: !widget.playlist
-                                              .isValueIn(item.data![index].id)
-                                          ? Colors.white
-                                          : Colors.red),
+                                      icon: const Icon(Icons.add)),
                                 );
                               },
                               separatorBuilder: (ctx, index) {
@@ -153,15 +135,23 @@ class _SongListPageState extends State<SongListPage> {
             style: TextStyle(color: Colors.white),
           ));
       ScaffoldMessenger.of(context).showSnackBar(snackbar);
-    } else {
-      widget.playlist.deleteData(data.id);
-      const snackbar = SnackBar(
-          backgroundColor: Colors.black,
-          content: Text(
-            'Song deleted from Playlist',
-            style: TextStyle(color: Colors.white),
-          ));
-      ScaffoldMessenger.of(context).showSnackBar(snackbar);
     }
   }
 }
+// class Playlistsongcheck {
+//   static ValueNotifier<List> selectPlaySong = ValueNotifier([]);
+//   static showSelectSong(index) async {
+//     final checkSong = playlistNotifier.value[index].songList;
+//     selectPlaySong.value.clear();
+//     playloop.clear();
+//     for (int i = 0; i < checkSong.length; i++) {
+//       for (int j = 0; j < AllSongs.songs.length; j++) {
+//         if (AllSongs.songs[j].id == checkSong[i]) {
+//           selectPlaySong.value.add(j);
+//           playloop.add(AllSongs.songs[j]);
+//           break;
+//         }
+//       }
+//     }
+//   }
+// }

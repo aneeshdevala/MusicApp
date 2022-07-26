@@ -117,7 +117,9 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                                                 'Song deleted from favorite',
                                                 style: TextStyle(
                                                     color: Colors.black),
-                                              ));
+                                              ),
+                                              duration:
+                                                  Duration(microseconds: 190));
                                           ScaffoldMessenger.of(context)
                                               .showSnackBar(snackbar);
                                         },

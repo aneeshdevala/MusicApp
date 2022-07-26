@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:musicapp/childscreen/miniscreen.dart';
 import 'package:musicapp/favorite.dart';
-import 'package:musicapp/newbox.dart';
 import 'package:musicapp/playlist.dart';
 import 'package:musicapp/search.dart';
 import 'package:musicapp/widgets/glass.dart';
@@ -75,7 +74,8 @@ class _BottomScreensState extends State<BottomScreens> {
                         backgroundColor: Colors.transparent,
                         selectedItemColor: Colors.black,
                         selectedFontSize: 15,
-                        unselectedItemColor: Color.fromRGBO(0, 0, 0, 0.38),
+                        unselectedItemColor:
+                            const Color.fromRGBO(0, 0, 0, 0.38),
                         selectedIconTheme: const IconThemeData(
                             color: Color.fromARGB(255, 235, 0, 0)),
                         showUnselectedLabels: false,

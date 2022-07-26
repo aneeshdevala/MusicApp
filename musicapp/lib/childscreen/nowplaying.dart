@@ -24,7 +24,8 @@ class NowPlay extends StatefulWidget {
 }
 
 class _NowPlayState extends State<NowPlay> {
-  bool _isPlaying = true;
+  bool _isshuffle = false;
+  // bool _isPlaying = true;
   int currentIndex = 0;
 
   @override
@@ -119,17 +120,18 @@ class _NowPlayState extends State<NowPlay> {
                                     text: widget.playerSong[currentIndex]
                                         .displayNameWOExt,
                                     style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 30,
-                                    ),
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 30,
+                                        color: Colors.white),
                                   ),
                                   const SizedBox(
                                     height: 10,
                                   ),
-                                  Expanded(
-                                    child: Row(
-                                      children: [
-                                        Text(
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        flex: 3,
+                                        child: Text(
                                           widget.playerSong[currentIndex].artist
                                                       .toString() ==
                                                   "<unknown>"
@@ -140,13 +142,16 @@ class _NowPlayState extends State<NowPlay> {
                                           overflow: TextOverflow.ellipsis,
                                           maxLines: 1,
                                           style: const TextStyle(
+                                            color: Colors.white,
                                             fontSize: 15,
                                           ),
                                         ),
-                                        const SizedBox(
-                                          width: 10,
-                                        ),
-                                        IconButton(
+                                      ),
+                                      const SizedBox(
+                                        width: 10,
+                                      ),
+                                      Expanded(
+                                        child: IconButton(
                                           icon: const Icon(Icons.volume_up),
                                           color: Colors.white,
                                           onPressed: () {
@@ -164,10 +169,12 @@ class _NowPlayState extends State<NowPlay> {
                                             );
                                           },
                                         ),
-                                        StreamBuilder<double>(
-                                          stream: GetSongs.player.speedStream,
-                                          builder: (context, snapshot) =>
-                                              IconButton(
+                                      ),
+                                      StreamBuilder<double>(
+                                        stream: GetSongs.player.speedStream,
+                                        builder: (context, snapshot) =>
+                                            Expanded(
+                                          child: IconButton(
                                             icon: Text(
                                                 "${snapshot.data?.toStringAsFixed(1)}x",
                                                 style: const TextStyle(
@@ -190,8 +197,8 @@ class _NowPlayState extends State<NowPlay> {
                                             },
                                           ),
                                         ),
-                                      ],
-                                    ),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
@@ -211,6 +218,10 @@ class _NowPlayState extends State<NowPlay> {
                               final total =
                                   durationState?.total ?? Duration.zero;
                               return ProgressBar(
+                                  timeLabelTextStyle: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 15),
                                   progress: progress,
                                   total: total,
                                   barHeight: 3.0,
@@ -236,8 +247,14 @@ class _NowPlayState extends State<NowPlay> {
                                     primary: Colors.transparent,
                                     onPrimary: Colors.black),
                                 onPressed: () {
-                                  GetSongs.player.setShuffleModeEnabled(true);
-                                  GetSongs.player.setShuffleModeEnabled(false);
+                                  _isshuffle == false
+                                      ? GetSongs.player
+                                          .setShuffleModeEnabled(true)
+                                      : GetSongs.player
+                                          .setShuffleModeEnabled(false);
+                                  // setState(() {
+                                  //   _isshuffle = !_isshuffle;
+                                  // });
                                   const ScaffoldMessenger(
                                       child: SnackBar(
                                           content: Text('Shuffle Enabled')));
@@ -245,13 +262,12 @@ class _NowPlayState extends State<NowPlay> {
                                 child: StreamBuilder<bool>(
                                     stream: GetSongs
                                         .player.shuffleModeEnabledStream,
-                                    builder: (context, snapshot) {
-                                      bool? shuffleState = snapshot.data;
-                                      if (shuffleState != null &&
-                                          shuffleState) {
-                                        return const Icon(
+                                    builder: (context, AsyncSnapshot snapshot) {
+                                      _isshuffle = snapshot.data;
+                                      if (_isshuffle) {
+                                        return Icon(
                                           Icons.shuffle,
-                                          color: Colors.white,
+                                          color: Colors.green[800],
                                           size: 35,
                                         );
                                       } else {
@@ -347,9 +363,9 @@ class _NowPlayState extends State<NowPlay> {
                                     builder: (context, snapshot) {
                                       final loopMode = snapshot.data;
                                       if (LoopMode.one == loopMode) {
-                                        return const Icon(
+                                        return Icon(
                                           Icons.repeat_one,
-                                          color: Colors.red,
+                                          color: Colors.green[800],
                                           size: 30,
                                         );
                                       } else {

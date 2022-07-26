@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:musicapp/Database/favoritebtn.dart';
 import 'package:musicapp/Database/favoritedb.dart';
 import 'package:musicapp/Database/playlsitsongdb.dart';
-import 'package:musicapp/SettingsScreen/privacpolicy.dart';
+
 import 'package:musicapp/getsongstorage.dart';
 import 'package:musicapp/widgets/glass.dart';
 import 'package:on_audio_query/on_audio_query.dart';
@@ -11,7 +11,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'SettingsScreen/sharefile.dart';
-import 'SettingsScreen/terms.dart';
+
 import 'childscreen/nowplaying.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -117,7 +117,7 @@ class HomeScreenState extends State<HomeScreen> {
                       leading: const Icon(Icons.star_border_outlined),
                       title: const Text('Rate this App'),
                       onTap: () {
-                        Navigator.pop(context);
+                        _ratingApp();
                       },
                     ),
                     ListTile(
@@ -357,6 +357,14 @@ class HomeScreenState extends State<HomeScreen> {
     // ignore: deprecated_member_use
     if (await launch(
         'https://aneeshdevala.github.io/Protfolio-Personalwebsite/')) {
+      throw "Try Again";
+    }
+  }
+
+  Future<void> _ratingApp() async {
+    // ignore: deprecated_member_use
+    if (await launch(
+        'https://play.google.com/store/apps/details?id=in.brototype.music_app')) {
       throw "Try Again";
     }
   }
