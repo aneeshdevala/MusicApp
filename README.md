@@ -1,7 +1,5 @@
 # MusicA (Music Player)
-
-
-I have successfully completed a music player named 'Musica'. it's an offline music player with basic features with the help of Flutter.
+It's an offline music player called "Musica" with basic features with the help of Flutter.
 It's Available in Play Store now.
 
 Play Store - https://lnkd.in/gMPU4Qns
