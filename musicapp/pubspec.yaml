@@ -46,6 +46,7 @@ dependencies:
   material_floating_search_bar: ^0.3.7
   on_audio_query: ^2.6.1
   permission_handler: ^10.0.0
+  provider: ^6.0.3
   rxdart: ^0.27.4
   share_plus: ^4.0.10
   url_launcher: ^6.1.5

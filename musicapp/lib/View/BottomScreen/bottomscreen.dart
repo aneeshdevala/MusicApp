@@ -1,33 +1,31 @@
 import 'package:flutter/material.dart';
-import 'package:musicapp/childscreen/miniscreen.dart';
-import 'package:musicapp/favorite.dart';
-import 'package:musicapp/playlist.dart';
-import 'package:musicapp/search.dart';
-import 'package:musicapp/widgets/glass.dart';
-import 'package:on_audio_query/on_audio_query.dart';
 
-import 'Database/favoritedb.dart';
-import 'getsongstorage.dart';
-import 'homescreen.dart';
+import 'package:musicapp/Controller/Providers/bottom_provider.dart';
+import 'package:musicapp/Controller/Widgets/glass.dart';
+import 'package:musicapp/View/MiniPlayer/miniscreen.dart';
+import 'package:musicapp/View/Favorites/favorite.dart';
+import 'package:musicapp/View/PlayList/playlist_folders.dart';
+import 'package:musicapp/View/Search/search_screen.dart';
 
-class BottomScreens extends StatefulWidget {
-  const BottomScreens({Key? key}) : super(key: key);
+import 'package:provider/provider.dart';
 
-  @override
-  State<BottomScreens> createState() => _BottomScreensState();
-}
+import '../../Controller/Widgets/getsongstorage.dart';
+import '../HomeScreen/homescreen.dart';
 
-class _BottomScreensState extends State<BottomScreens> {
+class BottomScreens extends StatelessWidget {
+  BottomScreens({Key? key}) : super(key: key);
+
   int currentIndex = 0;
   final screens = [
-    const HomeScreen(),
+    HomeScreen(),
     const SearchBar(),
     const FavoriteScreen(),
-    const PlayListSc(),
+    PlayListSc(),
   ];
   @override
   Widget build(BuildContext context) {
-    FocusManager.instance.primaryFocus?.unfocus();
+    final provider = Provider.of<BottomProvider>(context);
+    //FocusManager.instance.primaryFocus?.unfocus();
     return Container(
       height: double.infinity,
       width: double.infinity,
@@ -43,10 +41,8 @@ class _BottomScreensState extends State<BottomScreens> {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: IndexedStack(index: currentIndex, children: screens),
-        bottomNavigationBar: ValueListenableBuilder(
-          valueListenable: FavoriteDB.favoriteSongs,
-          builder:
-              (BuildContext context, List<SongModel> music, Widget? child) {
+        bottomNavigationBar: Consumer<BottomProvider>(
+          builder: (context, value, child) {
             return SingleChildScrollView(
                 child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -82,10 +78,8 @@ class _BottomScreensState extends State<BottomScreens> {
                         type: BottomNavigationBarType.fixed,
                         currentIndex: currentIndex,
                         onTap: (index) {
-                          setState(() {
-                            currentIndex = index;
-                            FavoriteDB.favoriteSongs.notifyListeners();
-                          });
+                          currentIndex = index;
+                          provider.currentIndex = index;
                         },
                         items: const [
                           BottomNavigationBarItem(

@@ -1,20 +1,15 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:musicapp/bottomscreen.dart';
+import 'package:musicapp/View/BottomScreen/bottomscreen.dart';
 // ignore: depend_on_referenced_packages
 import 'package:page_transition/page_transition.dart';
 
-class SplashScreen extends StatefulWidget {
+class SplashScreen extends StatelessWidget {
   const SplashScreen({Key? key}) : super(key: key);
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
-}
-
-class _SplashScreenState extends State<SplashScreen> {
-  @override
   Widget build(BuildContext context) {
-    FocusManager.instance.primaryFocus?.unfocus();
+    //  FocusManager.instance.primaryFocus?.unfocus();
     return AnimatedSplashScreen(
       splashIconSize: 300,
       splash: SizedBox(
@@ -26,7 +21,7 @@ class _SplashScreenState extends State<SplashScreen> {
         ),
       ),
       backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-      nextScreen: const BottomScreens(),
+      nextScreen: BottomScreens(),
       duration: 2000,
       splashTransition: SplashTransition.sizeTransition,
       pageTransitionType: PageTransitionType.rightToLeftWithFade,

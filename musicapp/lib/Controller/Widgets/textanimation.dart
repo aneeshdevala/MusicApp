@@ -24,6 +24,7 @@ class AnimatedText extends StatelessWidget {
   final Curve decelerationCurve;
   final VoidCallback? onDone;
 
+  // ignore: use_key_in_widget_constructors
   const AnimatedText({
     required this.text,
     this.style,
